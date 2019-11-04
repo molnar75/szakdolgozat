@@ -21,10 +21,16 @@ height = test.size[1]
 intensity_y = img_gray.sum(axis=1) / width
 intensity_x = img_gray.sum(axis=0) / height
 
+plt.axes([0, 0.15, 1, .8])
 plt.imshow(img, cmap = 'gray', interpolation = 'bicubic')
 plt.xticks([])
 plt.yticks([])
+plt.axes([0.3, 0.03, .405, .1])
+plt.xticks([])
 plt.plot(intensity_x)
-plt.plot(intensity_y)
+
+plt.axes([0.75, 0.15, .1, .8])
+plt.yticks([])
+plt.plot(intensity_y, range(height))
 
 plt.show()
