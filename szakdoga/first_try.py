@@ -2,6 +2,7 @@ import cv2
 from PIL import Image
 from pdf2image import convert_from_path
 from matplotlib import pyplot as plt
+import numpy as np
 
 images = convert_from_path('pdf_files/testpdf.pdf')
 
@@ -20,6 +21,7 @@ height = test.size[1]
 
 intensity_y = img_gray.sum(axis=1) / width
 intensity_x = img_gray.sum(axis=0) / height
+intensity_y = np.flip(intensity_y)
 
 plt.axes([0, 0.15, 1, .8])
 plt.imshow(img, cmap = 'gray', interpolation = 'bicubic')
