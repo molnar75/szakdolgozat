@@ -36,3 +36,18 @@ plt.yticks([])
 plt.plot(intensity_y, range(height))
 
 plt.show()
+
+'''
+intensity_y = np.flip(intensity_y)
+
+ax = plt.axes()
+ax.imshow(img, cmap = 'gray', interpolation = 'bicubic')
+plt.xticks([])
+plt.yticks([])
+ax.plot(intensity_x)
+
+plt.yticks([])
+ax.plot(intensity_y, range(height))
+
+plt.show()
+'''
