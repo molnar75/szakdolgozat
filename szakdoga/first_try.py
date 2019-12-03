@@ -45,6 +45,7 @@ plt.savefig('img_intensity/test.png')
 for i in range(1,width-1):
     if intensity_x[i] != intensity_x[i-1]:
         left_margin = i
+        print(intensity_x[i])
         break
     
 for i in range(width-2,0,-1):
@@ -63,3 +64,25 @@ for i in range(height-2,0,-1):
 
 im1 = test.crop((left_margin, height-top_margin, right_margin,height-bottom_margin))
 im1.save('img_crop_margin/testcrop.png', 'PNG')
+
+same_intensity = 0
+coordinates = []
+not_saved = True
+for i in range(0,height-1):
+    if intensity_y[i] == 255.0:
+        same_intensity = same_intensity+1
+        if same_intensity > 10 and not_saved:
+            coordinates.append(i-10)
+            not_saved = False
+    else:
+        if intensity_y[i-1] == 255.0 and not(not_saved):
+            coordinates.append(i-1)
+        same_intensity = 0
+        not_saved = True
+coordinates.append(height-1)
+
+paragraph_number = 0
+for i in range(1,len(coordinates)-2,2):
+    im = test.crop((left_margin, height-coordinates[i+1], right_margin,height-coordinates[i]))
+    im.save('img_crop_paragraphs/testcrop'+ format(paragraph_number) +'.png', 'PNG')
+    paragraph_number = paragraph_number+1
