@@ -29,7 +29,6 @@ ax1.imshow(img, cmap = 'gray', interpolation = 'bicubic')
 plt.setp(ax1.set_xticks([]))
 plt.setp(ax1.set_yticks([]))
 
-
 divider = make_axes_locatable(ax1)
 
 ax2 = divider.append_axes("right", size=1, pad=0.1)
@@ -39,15 +38,14 @@ plt.setp(ax2.set_yticks([]))
 ax3 = divider.append_axes("bottom", size=1, pad=0.1, sharex=ax1)
 ax3.plot(intensity_x)
 
-
 plt.savefig('img_intensity/test.png')
 
+#get coordinates to crop margins
 for i in range(1,width-1):
     if intensity_x[i] != intensity_x[i-1]:
         left_margin = i
-        print(intensity_x[i])
         break
-    
+
 for i in range(width-2,0,-1):
     if intensity_x[i] != intensity_x[i+1]:
         right_margin = i
@@ -62,27 +60,57 @@ for i in range(height-2,0,-1):
         top_margin = i
         break
 
+#crop margins
 im1 = test.crop((left_margin, height-top_margin, right_margin,height-bottom_margin))
 im1.save('img_crop_margin/testcrop.png', 'PNG')
 
+#get coordinates to crop paragraphs
 same_intensity = 0
-coordinates = []
+paragraph_coordinates = []
 not_saved = True
+max_spacing = 0
 for i in range(0,height-1):
     if intensity_y[i] == 255.0:
         same_intensity = same_intensity+1
         if same_intensity > 10 and not_saved:
-            coordinates.append(i-10)
+            paragraph_coordinates.append(i-10)
             not_saved = False
     else:
+        if same_intensity > max_spacing and same_intensity != bottom_margin and same_intensity != top_margin:
+            max_spacing = same_intensity
         if intensity_y[i-1] == 255.0 and not(not_saved):
-            coordinates.append(i-1)
+            paragraph_coordinates.append(i-1)
         same_intensity = 0
         not_saved = True
-coordinates.append(height-1)
+paragraph_coordinates.append(height-1)
 
+#crop paragraphs
 paragraph_number = 0
-for i in range(1,len(coordinates)-2,2):
-    im = test.crop((left_margin, height-coordinates[i+1], right_margin,height-coordinates[i]))
+for i in range(1,len(paragraph_coordinates)-2,2):
+    im = test.crop((left_margin, height-paragraph_coordinates[i+1], right_margin,height-paragraph_coordinates[i]))
     im.save('img_crop_paragraphs/testcrop'+ format(paragraph_number) +'.png', 'PNG')
     paragraph_number = paragraph_number+1
+
+#get coordinates to crop lines
+same_intensity = 0
+not_saved = True
+line_coordinates = []
+for i in range(0, height-1):
+    if intensity_y[i] == 255.0:
+        same_intensity = same_intensity+1
+        if same_intensity < max_spacing and same_intensity > 1 and not_saved:
+            line_coordinates.append(i-same_intensity+1)
+            not_saved=False
+    else:
+        if intensity_y[i-1] == 255.0 and not(not_saved):
+            line_coordinates.append(i-1)
+        same_intensity = 0
+        not_saved = True
+line_coordinates.append(height-1)
+
+#crop lines
+line_number = 0
+for i in range(1,len(line_coordinates)-2,2):
+    im = test.crop((left_margin, height-line_coordinates[i+1], right_margin,height-line_coordinates[i]))
+    im.save('img_crop_lines/testcrop'+ format(line_number) +'.png', 'PNG')
+    line_number = line_number+1
