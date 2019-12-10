@@ -41,8 +41,9 @@ ax3.plot(intensity_x)
 plt.savefig('img_intensity/test.png')
 
 #get coordinates to crop margins
-for i in range(1,width-1):
-    if intensity_x[i] != intensity_x[i-1]:
+# TODO: Ki kellene szervezni külön függvénybe ezeket.
+for i in range(1, width - 1):
+    if intensity_x[i] != intensity_x[i - 1]:
         left_margin = i
         break
 
@@ -55,6 +56,7 @@ for i in range(1,height-1):
     if intensity_y[i] != intensity_y[i-1]:
         bottom_margin = i
         break
+
 for i in range(height-2,0,-1):
     if intensity_y[i] != intensity_y[i+1]:
         top_margin = i
@@ -114,3 +116,10 @@ for i in range(1,len(line_coordinates)-2,2):
     im = test.crop((left_margin, height-line_coordinates[i+1], right_margin,height-line_coordinates[i]))
     im.save('img_crop_lines/testcrop'+ format(line_number) +'.png', 'PNG')
     line_number = line_number+1
+
+
+if __name__ == '__main__':
+    # margins = find_margins(image)
+    # marginal = draw_margins(image, margins)
+    # paragraphs = find_paragraphs(image, margins)
+    pass
