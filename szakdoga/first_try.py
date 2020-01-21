@@ -7,6 +7,7 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 #my modules
 import crop_methods
 import get_methods
+import manage_directories as mdir
 
 #TODO delete the contents of directories
 
@@ -28,6 +29,7 @@ def draw_intensity():
     plt.savefig('img_intensity/test.png')
 
 if __name__ == '__main__':
+    mdir.manage_directories()
     images = convert_from_path('pdf_files/testpdf.pdf')
     
     numberOfPages = len(images)
