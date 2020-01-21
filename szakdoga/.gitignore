@@ -1,5 +1,11 @@
-# Binaries
 *.png
 *.pyc
 *.log
 
+/images
+/__pycache__
+/img_crop_margins
+/img_crop_line
+/img_crop_words
+/img_intensity
+/pdf_files
