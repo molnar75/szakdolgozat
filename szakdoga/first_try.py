@@ -5,13 +5,11 @@ from matplotlib import pyplot as plt
 import numpy as np
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 #my modules
-import crop_methods
-import get_methods
+import crop_methods as crop
+import get_methods as get
 import manage_directories as mdir
 
-#TODO delete the contents of directories
-
-def draw_intensity():
+def draw_intensity(i):
     fig, ax1 = plt.subplots(figsize=(8,8))
     ax1.imshow(image_read, cmap = 'gray', interpolation = 'bicubic')
     plt.setp(ax1.set_xticks([]))
@@ -26,13 +24,14 @@ def draw_intensity():
     ax3 = divider.append_axes("bottom", size=1, pad=0.1, sharex=ax1)
     ax3.plot(intensity_x)
     
-    plt.savefig('img_intensity/test.png')
+    plt.savefig('img_intensity/test' + format(i) + '.png')
 
 if __name__ == '__main__':
     mdir.manage_directories()
     images = convert_from_path('pdf_files/testpdf.pdf')
-    
     numberOfPages = len(images)
+    line_number = 0
+    
     for i in range(numberOfPages): 
         images[i].save('images/test' + format(i) + '.png', 'PNG')
     
@@ -49,15 +48,29 @@ if __name__ == '__main__':
         intensity_x = image_gray.sum(axis=0) / height
         intensity_y = np.flip(intensity_y)
         
-        margins = get_methods.get_margins(width, height, intensity_x, intensity_y)
-        crop_methods.crop_margins(i, image, margins, height)
+        draw_intensity(i)
         
-        paragraph_coordinates = get_methods.get_paragraphs(height, intensity_y, margins)
-        crop_methods.crop_paragraphs(paragraph_coordinates, image, margins, height)
+        margins = get.get_margins(width, height, intensity_x, intensity_y)
+        crop.crop_margins(i, image, margins, height)
         
-        line_coordinates = get_methods.get_lines(height, intensity_y)
-        crop_methods.crop_lines(line_coordinates, image, margins, height)
+        paragraph_coordinates = get.get_paragraphs(height, intensity_y, margins)
+        crop.crop_paragraphs(paragraph_coordinates, image, margins, height)
         
-        draw_intensity()
+        line_coordinates = get.get_lines(height, intensity_y)
+        new_line_number = crop.crop_lines(line_coordinates, image, margins, height)
+        line_number = line_number + new_line_number
+    #for i in range(line_number):
+            #line_read = cv2.imread('img_crop_lines/testcrop' + format(i) + '.png')
+    line_read = cv2.imread('img_crop_lines/testcrop0.png')
+    line_gray = cv2.cvtColor(line_read, cv2.COLOR_BGR2GRAY)
+    
+    line = Image.fromarray(line_gray)
+    pix = line.load()
+    width = line.size[0]
+    height = line.size[1]
+
+    intensity_x = line_gray.sum(axis=0) / height
+    words_coordinates = get.get_words(width, intensity_x)
+    word_number = crop.crop_words(words_coordinates, line, height, width) #TODO crop first words too
     # marginal = draw_margins(image, margins)
     pass
