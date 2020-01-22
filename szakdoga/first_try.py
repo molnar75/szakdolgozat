@@ -28,7 +28,7 @@ def draw_intensity(i):
 
 if __name__ == '__main__':
     mdir.manage_directories()
-    images = convert_from_path('pdf_files/testpdf.pdf')
+    images = convert_from_path('pdf_files/test10pdf.pdf')
     numberOfPages = len(images)
     line_number = 0
     
@@ -54,23 +54,26 @@ if __name__ == '__main__':
         crop.crop_margins(i, image, margins, height)
         
         paragraph_coordinates = get.get_paragraphs(height, intensity_y, margins)
-        crop.crop_paragraphs(paragraph_coordinates, image, margins, height)
+        crop.crop_paragraphs(i, paragraph_coordinates, image, margins, height)
         
         line_coordinates = get.get_lines(height, intensity_y)
-        new_line_number = crop.crop_lines(line_coordinates, image, margins, height)
-        line_number = line_number + new_line_number
-    #for i in range(line_number):
-            #line_read = cv2.imread('img_crop_lines/testcrop' + format(i) + '.png')
-    line_read = cv2.imread('img_crop_lines/testcrop0.png')
-    line_gray = cv2.cvtColor(line_read, cv2.COLOR_BGR2GRAY)
-    
-    line = Image.fromarray(line_gray)
-    pix = line.load()
-    width = line.size[0]
-    height = line.size[1]
-
-    intensity_x = line_gray.sum(axis=0) / height
-    words_coordinates = get.get_words(width, intensity_x)
-    word_number = crop.crop_words(words_coordinates, line, height, width) #TODO crop first words too
+        line_number = crop.crop_lines(i, line_coordinates, image, margins, height)
+        for j in range(line_number):
+            line_read = cv2.imread('img_crop_lines/' + format(i) + 'testcrop' + format(j) + '.png')
+            line_gray = cv2.cvtColor(line_read, cv2.COLOR_BGR2GRAY)
+            
+            line = Image.fromarray(line_gray)
+            pix = line.load()
+            width = line.size[0]
+            height = line.size[1]
+        
+            intensity_x = line_gray.sum(axis=0) / height
+            words_coordinates = get.get_words(width, intensity_x)
+            word_number = crop.crop_words(j,words_coordinates, line, height, width) 
     # marginal = draw_margins(image, margins)
     pass
+#TODO crop first words too
+#TODO find solution for "j" problem
+#TODO separate words with hyphen 
+#TODO separate brackets from words, dot and comma too
+#TODO crop from the top of the page to the bottom

@@ -25,8 +25,6 @@ def get_paragraphs(height, intensity_y, margins):
     same_intensity = 0
     paragraph_coordinates = []
     not_saved = True
-    global max_spacing 
-    max_spacing = 0
     for i in range(0,height-1):
         if intensity_y[i] == 255.0:
             same_intensity = same_intensity+1
@@ -34,8 +32,6 @@ def get_paragraphs(height, intensity_y, margins):
                 paragraph_coordinates.append(i-10)
                 not_saved = False
         else:
-            if same_intensity > max_spacing and same_intensity != margins[3] and same_intensity != margins[1]:
-                max_spacing = same_intensity
             if intensity_y[i-1] == 255.0 and not(not_saved):
                 paragraph_coordinates.append(i-1)
             same_intensity = 0
@@ -50,7 +46,7 @@ def get_lines(height, intensity_y):
     for i in range(0, height-1):
         if intensity_y[i] == 255.0:
             same_intensity = same_intensity+1
-            if same_intensity < max_spacing and same_intensity > 1 and not_saved:
+            if same_intensity > 1 and not_saved:
                 line_coordinates.append(i-same_intensity+1)
                 not_saved=False
         else:
