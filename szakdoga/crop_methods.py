@@ -24,3 +24,11 @@ def crop_words(line_number,words_coordinates, image, height, width):
         image_crop.save('img_crop_words/' + format(line_number) + 'line_crop'+ format(word_number) +'.png', 'PNG')
         word_number = word_number+1
     return word_number
+
+def crop_characters(line_number,characters_coordinates, image, height, width):
+    character_number = 0
+    for i in range(0,len(characters_coordinates)-2,2):
+        image_crop = image.crop((characters_coordinates[i], 0, characters_coordinates[i+1], height))
+        image_crop.save('img_crop_characters/' + format(line_number) + 'line_crop'+ format(character_number) +'.png', 'PNG')
+        character_number = character_number+1
+    return character_number

@@ -62,15 +62,30 @@ def get_words(width, intensity_x):
     not_saved = True
     words_coordinates = []
     for i in range(0, width-1):
-        if intensity_x[i] == 255.0:
+        if intensity_x[i] > 240:
             same_intensity = same_intensity+1
             if same_intensity > 5 and not_saved:
                 words_coordinates.append(i-same_intensity+1)
                 not_saved=False
         else:
-            if intensity_x[i-1] == 255.0 and not(not_saved):
+            if intensity_x[i-1] > 240 and not(not_saved):
                 words_coordinates.append(i-1)
             same_intensity = 0
             not_saved = True
     words_coordinates.append(width-1)
     return words_coordinates
+
+def get_characters(width, intensity_x):
+    not_saved = True
+    characters_coordinates = []
+    for i in range(0, width-1):
+        if intensity_x[i] < 248:
+            if not_saved:
+                characters_coordinates.append(i)
+                not_saved=False
+        else:
+            if intensity_x[i-1] < 248 and not(not_saved):
+                characters_coordinates.append(i-1)
+            not_saved = True
+    characters_coordinates.append(width-1)
+    return characters_coordinates

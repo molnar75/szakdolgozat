@@ -28,7 +28,7 @@ def draw_intensity(i):
 
 if __name__ == '__main__':
     mdir.manage_directories()
-    images = convert_from_path('pdf_files/test10pdf.pdf')
+    images = convert_from_path('pdf_files/testpdf.pdf')
     numberOfPages = len(images)
     line_number = 0
     
@@ -59,7 +59,7 @@ if __name__ == '__main__':
         line_coordinates = get.get_lines(height, intensity_y)
         line_number = crop.crop_lines(i, line_coordinates, image, margins, height)
         for j in range(line_number):
-            line_read = cv2.imread('img_crop_lines/' + format(i) + 'testcrop' + format(j) + '.png')
+            line_read = cv2.imread('img_crop_lines/' + format(i) + 'page_crop' + format(j) + '.png')
             line_gray = cv2.cvtColor(line_read, cv2.COLOR_BGR2GRAY)
             
             line = Image.fromarray(line_gray)
@@ -70,6 +70,9 @@ if __name__ == '__main__':
             intensity_x = line_gray.sum(axis=0) / height
             words_coordinates = get.get_words(width, intensity_x)
             word_number = crop.crop_words(j,words_coordinates, line, height, width) 
+            
+            characters_coordinates = get.get_characters(width, intensity_x)
+            character_number = crop.crop_characters(j,characters_coordinates, line, height, width) 
     # marginal = draw_margins(image, margins)
     pass
 #TODO crop first words too
