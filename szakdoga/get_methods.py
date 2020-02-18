@@ -21,7 +21,7 @@ def get_margins(width, height, intensity_x, intensity_y):
     margins = (left_margin, top_margin, right_margin, bottom_margin)
     return margins
 
-def get_paragraphs(height, intensity_y, margins):
+def get_paragraphs(height, intensity_y):
     same_intensity = 0
     paragraph_coordinates = []
     not_saved = True
