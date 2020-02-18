@@ -12,7 +12,7 @@ def crop_paragraphs(page_number, paragraph_coordinates, image, margins, height):
 def crop_lines(page_number, line_coordinates, image, margins, height):
     line_number = 0
     for i in range(1,len(line_coordinates)-2,2):
-        image_crop = image.crop((margins[0], height-line_coordinates[i+1], margins[2], height-line_coordinates[i]))
+        image_crop = image.crop((0, height-line_coordinates[i+1], margins[2], height-line_coordinates[i]))
         image_crop.save('img_crop_lines/' + format(page_number) + 'page_crop'+ format(line_number) +'.png', 'PNG')
         line_number = line_number+1
     return line_number
