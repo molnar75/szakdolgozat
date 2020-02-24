@@ -28,15 +28,15 @@ def draw_intensity(i):
 
 if __name__ == '__main__':
     mdir.manage_directories()
-    images = convert_from_path('pdf_files/testpdf.pdf')
+    images = convert_from_path('pdf_files/testpictures.pdf')
     numberOfPages = len(images)
     line_number = 0
     
     for i in range(numberOfPages): 
-        images[i].save('images/test' + format(i) + '.png', 'PNG')
+        images[i].save('img_pages/page' + format(i) + '.png', 'PNG')
     
     for i in range(numberOfPages):
-        image_read = cv2.imread('images/test' + format(i) + '.png')
+        image_read = cv2.imread('img_pages/page' + format(i) + '.png')
         image_gray = cv2.cvtColor(image_read, cv2.COLOR_BGR2GRAY)
         
         image = Image.fromarray(image_gray)
@@ -53,9 +53,10 @@ if __name__ == '__main__':
         margins = get.get_margins(width, height, intensity_x, intensity_y)
         crop.crop_margins(i, image, margins, height)
         
-        paragraph_coordinates = get.get_paragraphs(height, intensity_y, margins)
-        crop.crop_paragraphs(i, paragraph_coordinates, image, margins, height)
+        paragraph_coordinates = get.get_paragraphs(height, intensity_y)
+        crop.crop_paragraphs(paragraph_coordinates, image, margins, height)
         
+        '''
         line_coordinates = get.get_lines(height, intensity_y)
         line_number = crop.crop_lines(i, line_coordinates, image, margins, height)
         for j in range(line_number):
@@ -73,6 +74,7 @@ if __name__ == '__main__':
             
             characters_coordinates = get.get_characters(width, intensity_x)
             character_number = crop.crop_characters(j,characters_coordinates, line, height, width) 
+            '''
     # marginal = draw_margins(image, margins)
     pass
 #TODO crop first words too

@@ -15,7 +15,7 @@ def create_directory(path):
         print ("Creation of the directory %s failed" % path)
 def manage_directories():
     current_path = os.getcwd()
-    directory_names = ['images', 'img_intensity', 'img_crop_lines', 'img_crop_margins', 'img_crop_paragraphs', 'img_crop_words', 'img_crop_characters']
+    directory_names = ['images', 'img_pages', 'img_intensity', 'img_crop_lines', 'img_crop_margins', 'img_crop_paragraphs', 'img_crop_words', 'img_crop_characters']
     size = len(directory_names)
     
     for i in range(size):
