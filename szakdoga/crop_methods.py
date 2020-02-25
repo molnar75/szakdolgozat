@@ -12,11 +12,16 @@ def crop_margins(i, image, margins, height):
 
 def crop_paragraphs(paragraph_coordinates, image, margins, height):
     global paragraph_number
+    global image_number
     for i in range(1,len(paragraph_coordinates)-2,2):
         image_crop = image.crop((margins[0], height-paragraph_coordinates[i+1], margins[2], height-paragraph_coordinates[i]))
-        if not seek_for_columns(image_crop):     
-            image_crop.save('img_crop_paragraphs/paragraph_crop'+ format(paragraph_number) +'.png', 'PNG')
-            paragraph_number = paragraph_number+1
+        if not seek_for_columns(image_crop):
+            if is_paragraph(image_crop):
+                image_crop.save('img_crop_paragraphs/paragraph_crop'+ format(paragraph_number) +'.png', 'PNG')
+                paragraph_number = paragraph_number+1
+            else:
+                image_crop.save('images/image'+ format(image_number) +'.png', 'PNG')
+                image_number = image_number+1
     return paragraph_number
         
 def crop_lines(line_coordinates, image, width, height):
