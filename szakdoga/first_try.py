@@ -8,6 +8,9 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 import crop_methods as crop
 import get_methods as get
 import manage_directories as mdir
+import pytesseract
+
+tessdata_dir_config = '--tessdata-dir "C:\\Program Files (x86)\\Tesseract-OCR\\tessdata"'
 
 def draw_intensity(i):
     fig, ax1 = plt.subplots(figsize=(8,8))
@@ -35,6 +38,7 @@ if __name__ == '__main__':
         images[i].save('img_pages/page' + format(i) + '.png', 'PNG')
     
     for i in range(numberOfPages):
+        print(format(i + 1) + '/' + format(numberOfPages) + ' page', end='\r')        
         image_read = cv2.imread('img_pages/page' + format(i) + '.png')
         image_gray = cv2.cvtColor(image_read, cv2.COLOR_BGR2GRAY)
         
@@ -54,8 +58,9 @@ if __name__ == '__main__':
         
         paragraph_coordinates = get.get_paragraphs(height, intensity_y)
         paragraph_number = crop.crop_paragraphs(paragraph_coordinates, image, margins, height)
-        
+    print('Crop paragraphs done!')
     for i in range(paragraph_number):
+        print(format(i + 1) + '/' + format(paragraph_number) + ' paragraph', end='\r')
         paragraph_read =  cv2.imread('img_crop_paragraphs/paragraph_crop' + format(i) + '.png')
         paragraph_gray = cv2.cvtColor(paragraph_read, cv2.COLOR_BGR2GRAY)
         
@@ -68,11 +73,14 @@ if __name__ == '__main__':
         
         line_coordinates = get.get_lines(height, intensity_y)
         line_number = crop.crop_lines(line_coordinates, paragraph, width, height)
+    print('Crop lines done!')
     for i in range(line_number):
+        print(format(i + 1) + '/' + format(line_number) + ' line', end='\r')
         line_read = cv2.imread('img_crop_lines/line_crop' + format(i) + '.png')
         line_gray = cv2.cvtColor(line_read, cv2.COLOR_BGR2GRAY)
         
         line = Image.fromarray(line_gray)
+        #print(pytesseract.image_to_string(line, lang='hun', config=tessdata_dir_config))
         pix = line.load()
         width = line.size[0]
         height = line.size[1]
@@ -81,7 +89,9 @@ if __name__ == '__main__':
         words_coordinates = get.get_words(width, intensity_x)
         word_number = crop.crop_words(words_coordinates, line, height, width) 
         
-        characters_coordinates = get.get_characters(width, intensity_x)
-        character_number = crop.crop_characters(characters_coordinates, line, height, width) 
+        #characters_coordinates = get.get_characters(width, intensity_x)
+        #character_number = crop.crop_characters(characters_coordinates, line, height, width) 
+    print('Crop words done!')
+    crop.write_text_to_file()
     pass
 #TODO crop from the top of the page to the bottom

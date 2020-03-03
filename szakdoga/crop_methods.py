@@ -1,10 +1,14 @@
 import numpy as np
+import pytesseract
+
+tessdata_dir_config = '--tessdata-dir "C:\\Program Files (x86)\\Tesseract-OCR\\tessdata"'
 
 paragraph_number = 0
 image_number = 0
 line_number = 0
 word_number = 0
 character_number = 0
+text = ''
 
 def crop_margins(i, image, margins, height):
     image_crop = image.crop((margins[0], height-margins[1], margins[2],height-margins[3]))
@@ -13,8 +17,8 @@ def crop_margins(i, image, margins, height):
 def crop_paragraphs(paragraph_coordinates, image, margins, height):
     global paragraph_number
     global image_number
-    for i in range(1,len(paragraph_coordinates)-2,2):
-        image_crop = image.crop((margins[0], height-paragraph_coordinates[i+1], margins[2], height-paragraph_coordinates[i]))
+    for i in range(len(paragraph_coordinates)-2,1,-2):
+        image_crop = image.crop((margins[0], height-paragraph_coordinates[i], margins[2], height-paragraph_coordinates[i-1]))
         if not seek_for_columns(image_crop):
             if is_paragraph(image_crop):
                 image_crop.save('img_crop_paragraphs/paragraph_crop'+ format(paragraph_number) +'.png', 'PNG')
@@ -34,18 +38,31 @@ def crop_lines(line_coordinates, image, width, height):
         line_coordinates.pop(len(line_coordinates)-1)
     else:
         line_coordinates.append(height)
-    for i in range(0,len(line_coordinates)-1,2):
-        image_crop = image.crop((0, height-line_coordinates[i+1], width, height-line_coordinates[i]))
+    if line_coordinates and len(line_coordinates) %2 != 0:
+        line_coordinates.pop(len(line_coordinates)-1) #up margin
+    for i in range(len(line_coordinates)-1,0,-2):
+        image_crop = image.crop((0, height-line_coordinates[i], width, height-line_coordinates[i-1]))
         image_crop.save('img_crop_lines/line_crop'+ format(line_number) +'.png', 'PNG')
         line_number = line_number+1
     return line_number
 
 def crop_words(words_coordinates, image, height, width):
     global word_number
-    for i in range(1,len(words_coordinates)-2,2):
+    global text
+    if words_coordinates and words_coordinates[0] == 0:  #there is some margins
+        words_coordinates.pop(0)
+    else:
+        words_coordinates.insert(0,0) 
+    if words_coordinates and words_coordinates[len(words_coordinates)-1] == width:
+        words_coordinates.pop(len(words_coordinates)-1)
+    else:
+        words_coordinates.append(width)
+    for i in range(0,len(words_coordinates)-2,2):
         image_crop = image.crop((words_coordinates[i], 0, words_coordinates[i+1], height))
+        write_words_to_file(image_crop)
         image_crop.save('img_crop_words/word_crop'+ format(word_number) +'.png', 'PNG')
         word_number = word_number+1
+    write_words_to_file('')
     return word_number
 
 def crop_characters(characters_coordinates, image, height, width):
@@ -124,7 +141,7 @@ def get_coordinates(width, intensity_x):
         if intensity_x[i] == 255.0:
             same_intensity = same_intensity+1
             if same_intensity > 15 and not_saved:
-                paragraph_coordinates.append(i-same_intensity+1)
+                paragraph_coordinates.append(i-same_intensity)
                 not_saved = False
         else:
             if intensity_x[i-1] == 255.0 and not(not_saved):
@@ -133,4 +150,17 @@ def get_coordinates(width, intensity_x):
             not_saved = True
     return paragraph_coordinates
     
-    
+def write_words_to_file(word):
+    global text
+    if word != '':
+        word = pytesseract.image_to_string(word, lang='hun+eng', config=tessdata_dir_config)
+        print(word)
+        text = text + word + ' '
+    else:
+        text = text + '\n'
+
+def write_text_to_file():
+    global text
+    file = open('text.txt', 'a')
+    file.write(text)
+    file.close()

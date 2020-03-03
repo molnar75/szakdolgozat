@@ -64,11 +64,11 @@ def get_words(width, intensity_x):
         if intensity_x[i] > 240:
             same_intensity = same_intensity+1
             if same_intensity > 5 and not_saved:
-                words_coordinates.append(i-same_intensity+1)
+                words_coordinates.append(i-same_intensity+5)
                 not_saved=False
         else:
             if intensity_x[i-1] > 240 and not(not_saved):
-                words_coordinates.append(i-1)
+                words_coordinates.append(i-5)
             same_intensity = 0
             not_saved = True
     words_coordinates.append(width-1)
