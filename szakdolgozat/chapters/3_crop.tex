@@ -62,7 +62,7 @@ Eredményül megkaptuk a dokumentumot egységekre bontva. Ezek után már csak a
 
 Az eddigi feldolgozás során a dokumentumot alulról-felfelé bontottuk részekre, viszont ahhoz, hogy végeredményként értelmes szöveget kapjunk, elengedhetetlen hogy a képek oldalhű (?) sorrendben legyenek lementve.
 
-Mivel az intenzitás vizsgálat a lap aljáról indul, így a lista pont fordított sorrendbe tartalmazza a koordinátákat. Eddig a crop metódusban a for ciklusom a lista elejéről, most viszont a lista végéről indul el, így a lap tetején lévő paragrafus lesz lementve elsőnek, nem pedig a lap alján levő. A paragrafusokon kívül a sorok crop metódusát kellett még módosítanom, a szavakét és a karakterekét nem, mivel azokat az x tengely mentén vágom, így azok eleve megfelelő sorrenbe kerültek mentésre. 
+Mivel az intenzitás vizsgálat a lap aljáról indul, így a lista pont fordított sorrendbe tartalmazza a koordinátákat. Eddig a crop metódusban a for ciklusom a lista elejéről, most viszont a lista végéről indul el, így a lap tetején lévő paragrafus lesz lementve elsőnek, nem pedig a lap alján levő. A paragrafusokon kívül a sorok crop metódusát kellett még módosítanom, a szavakét és a karakterekét nem, mivel azokat az x tengely mentén vágom, így azok eleve megfelelő sorrenbe kerültek mentésre.
 
 Ezzel a dokumentumom fel van bontva a legapróbb egységre (karakter) és megfelelő sorrendben követik egymást az egységek, így következhet a karakter felismerő (optical character recognition (OCR)).
 
@@ -70,4 +70,4 @@ A python egyik ocr eszközét (tool?) a Python-tesseract-ot hívtam segítségü
 
 Ebből arra következtettem hogy a felbontása az adott képnek túl alacsony lehet, így megpróbálkoztam egy nagyobb felbontású képpel, de sajnos úgy sem jártam sikerrel.
 
-Következő lépésként egy szintet visszább léptem, és most nem a karaktereket, hanem a szavakat adtam át a metódusnak. Itt már sokkal kielégítőbb eredményt kaptam. A szavakat nagyjából 80\%-os pontossággal beazonosította, viszont itt is akadtak problémák bőven. Az egy és két betűs szavakat/kötőszavakat (pl. az, és, a, s) és a számokat nem ismerte fel a metódus, és üres stringeket kaptam helyettük. Ezen kívül elég sok ékezet lemaradt, és gyakran keverte az I és az l betűket. 
+Következő lépésként egy szintet visszább léptem, és most nem a karaktereket, hanem a szavakat adtam át a metódusnak. Itt már sokkal kielégítőbb eredményt kaptam. A szavakat nagyjából 80\%-os pontossággal beazonosította, viszont itt is akadtak problémák bőven. Az egy és két betűs szavakat/kötőszavakat (pl. az, és, a, s) és a számokat nem ismerte fel a metódus (vagy csak nagyon ritkán), és üres stringeket kaptam helyettük. Ezen kívül elég sok ékezet lemaradt, és gyakran keverte a betűket, pl. I és az l esetében.
