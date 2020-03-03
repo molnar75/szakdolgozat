@@ -141,7 +141,7 @@ def get_coordinates(width, intensity_x):
         if intensity_x[i] == 255.0:
             same_intensity = same_intensity+1
             if same_intensity > 15 and not_saved:
-                paragraph_coordinates.append(i-same_intensity)
+                paragraph_coordinates.append(i-same_intensity+1)
                 not_saved = False
         else:
             if intensity_x[i-1] == 255.0 and not(not_saved):
@@ -154,13 +154,15 @@ def write_words_to_file(word):
     global text
     if word != '':
         word = pytesseract.image_to_string(word, lang='hun+eng', config=tessdata_dir_config)
-        print(word)
-        text = text + word + ' '
+        if word != '':
+            text = text + word + ' '
+        else: 
+            text = text + '?'
     else:
         text = text + '\n'
 
 def write_text_to_file():
     global text
-    file = open('text.txt', 'a')
+    file = open('text.txt', 'w')
     file.write(text)
     file.close()

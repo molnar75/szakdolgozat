@@ -44,13 +44,13 @@ def get_lines(height, intensity_y):
     not_saved = True
     line_coordinates = []
     for i in range(0, height-1):
-        if intensity_y[i] == 255.0:
+        if intensity_y[i] > 252:
             same_intensity = same_intensity+1
             if same_intensity > 2 and not_saved:
                 line_coordinates.append(i-same_intensity+1)
                 not_saved=False
         else:
-            if intensity_y[i-1] == 255.0 and not(not_saved):
+            if intensity_y[i-1] > 252 and not(not_saved):
                 line_coordinates.append(i-1)
             same_intensity = 0
             not_saved = True
@@ -64,11 +64,11 @@ def get_words(width, intensity_x):
         if intensity_x[i] > 240:
             same_intensity = same_intensity+1
             if same_intensity > 5 and not_saved:
-                words_coordinates.append(i-same_intensity+5)
+                words_coordinates.append(i-same_intensity+1)
                 not_saved=False
         else:
             if intensity_x[i-1] > 240 and not(not_saved):
-                words_coordinates.append(i-5)
+                words_coordinates.append(i-1)
             same_intensity = 0
             not_saved = True
     words_coordinates.append(width-1)
