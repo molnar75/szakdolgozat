@@ -28,7 +28,7 @@ def get_paragraphs(height, intensity_y):
     for i in range(0,height-1):
         if intensity_y[i] == 255.0:
             same_intensity = same_intensity+1
-            if same_intensity > 10 and not_saved:
+            if same_intensity > 15 and not_saved:
                 paragraph_coordinates.append(i-10)
                 not_saved = False
         else:
@@ -46,7 +46,7 @@ def get_lines(height, intensity_y):
     for i in range(0, height-1):
         if intensity_y[i] > 252:
             same_intensity = same_intensity+1
-            if same_intensity > 2 and not_saved:
+            if same_intensity > 4 and not_saved:
                 line_coordinates.append(i-same_intensity+1)
                 not_saved=False
         else:
@@ -80,11 +80,11 @@ def get_characters(width, intensity_x):
     for i in range(0, width-1):
         if intensity_x[i] < 248:
             if not_saved:
-                characters_coordinates.append(i)
+                characters_coordinates.append(i-1)
                 not_saved=False
         else:
             if intensity_x[i-1] < 248 and not(not_saved):
-                characters_coordinates.append(i-1)
+                characters_coordinates.append(i+1)
             not_saved = True
     characters_coordinates.append(width-1)
     return characters_coordinates

@@ -25,3 +25,5 @@ def manage_directories():
             delete_directory(path)
         else: 
             create_directory(path)
+    if os.path.exists("text.txt"):
+        os.remove("text.txt")

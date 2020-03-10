@@ -1,7 +1,9 @@
 import numpy as np
 import pytesseract
+from PIL import ImageOps
 
-tessdata_dir_config = '--tessdata-dir "C:\\Program Files (x86)\\Tesseract-OCR\\tessdata"'
+tessdata_dir_config = '--psm 13 --oem 1'
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 paragraph_number = 0
 image_number = 0
@@ -21,6 +23,7 @@ def crop_paragraphs(paragraph_coordinates, image, margins, height):
         image_crop = image.crop((margins[0], height-paragraph_coordinates[i], margins[2], height-paragraph_coordinates[i-1]))
         if not seek_for_columns(image_crop):
             if is_paragraph(image_crop):
+                image_crop = ImageOps.expand(image_crop, 5, 'white')
                 image_crop.save('img_crop_paragraphs/paragraph_crop'+ format(paragraph_number) +'.png', 'PNG')
                 paragraph_number = paragraph_number+1
             else:
@@ -59,16 +62,15 @@ def crop_words(words_coordinates, image, height, width):
         words_coordinates.append(width)
     for i in range(0,len(words_coordinates)-2,2):
         image_crop = image.crop((words_coordinates[i], 0, words_coordinates[i+1], height))
-        write_words_to_file(image_crop)
         image_crop.save('img_crop_words/word_crop'+ format(word_number) +'.png', 'PNG')
         word_number = word_number+1
-    write_words_to_file('')
     return word_number
 
 def crop_characters(characters_coordinates, image, height, width):
     global character_number
     for i in range(0,len(characters_coordinates)-2,2):
         image_crop = image.crop((characters_coordinates[i], 0, characters_coordinates[i+1], height))
+        write_words_to_file(image_crop)
         image_crop.save('img_crop_characters/character_crop'+ format(character_number) +'.png', 'PNG')
         character_number = character_number+1
     return character_number
@@ -150,19 +152,23 @@ def get_coordinates(width, intensity_x):
             not_saved = True
     return paragraph_coordinates
     
-def write_words_to_file(word):
+def write_words_to_file(character_image):
     global text
-    if word != '':
-        word = pytesseract.image_to_string(word, lang='hun+eng', config=tessdata_dir_config)
+    if character_image != '':
+        character_image = ImageOps.expand(character_image, 10, 'white')
+        character_image = character_image.convert("RGB")
+        word = pytesseract.image_to_string(character_image, lang='hun+eng', config=tessdata_dir_config)
         if word != '':
-            text = text + word + ' '
+            text = text + word
         else: 
             text = text + '?'
     else:
-        text = text + '\n'
+        text = text + ' '
 
 def write_text_to_file():
     global text
-    file = open('text.txt', 'w')
+    text = text + '\n'
+    file = open('text.txt', 'a', encoding="utf-8")
     file.write(text)
     file.close()
+    text = ''
