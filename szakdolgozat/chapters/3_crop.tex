@@ -48,13 +48,20 @@ A szavakra bontásnál szükségem van az eddig levágott sorokra, így egy for 
 
 A szavak betűkre bontása már egy érdekesebb témakör. Ennél az algoritmusnál már nem a világos, hanem épp hogy a sötét részeket kerestem, és ha már 1 pixelnek megfelelő sötét részt is találtam már mentettem az adott indexet. Ez a legtöbb esetben szépen működött és megkaptam egyesével a betűket. Viszont a ligatúrák esetében a betűk egymásba lógnak, ezért az algoritmusom nem vágta szét őket, hanem egybe mentette le. Ilyen esetek voltak például az r és az f vagy t találkozása, vagy például a dupla t vagy f betűk.
 
+\begin{figure}[H]
+\centering
+\includegraphics[scale=1]{images/page.png}
+\caption{Nem csak egyszerű szöveget tartalmazó pdf}
+\label{fig:page}
+\end{figure}
+
 Az eddigiekben azt feltételeztük hogy a dokumentum amelyet vizsgálunk, az szövegen kívül mást nem tartalmaz, és az adott szöveg is folytonos, egyetlen hasáb. Amennyiben egy bonyolultabb pdf dokumentumot kell feldolgoznunk (?) abban az esetben az eddigi algoritmusok a paragrafusokra bontásig működnek, ám ha a képeket (és a táblázatokat ha fogok vele foglalkozni) nem kezeljük külön, abban az esetben a sorokra bontásnál a folyamat megszakad. Annak érdekében hogy ezt elkerüljük, a paragrafusokra bontásnál egyéb vizsgálatokra van szükség.
 
 \begin{figure}[H]
 \centering
-\includegraphics[scale=1]{images/page.png}
-\caption{Az egységekre bontás első szakaszának redeménye}
-\label{fig:page}
+\includegraphics[scale=1]{images/page2.png}
+\caption{Az egységekre bontás első szakaszának eredménye}
+\label{fig:page 2}
 \end{figure}
 
 A paragrafusra bontás során a vizsgálat az y tengely mentén történik. A képek amelyeket ez úton megkapunk, vízszintesen bontják részekre a dokumentumot, tehát ha több hasábunk, vagy netalántán egy képünk van mellette valamennyi szöveggel, azok mind egy egységet alkotnak. A feladatunk hogy ezeket az egységeket szétbontsuk, és megismerjük hogy az adott részegységek szöveget tartalmaznak vagy valami mást.
@@ -67,12 +74,12 @@ Amennyiben talál, akkor következik a részegységekre bontás. Mivel a paragra
 
 \begin{figure}[H]
 \centering
-\includegraphics[scale=1]{images/page2.png}
+\includegraphics[scale=1]{images/page3.png}
 \caption{Az egységekre bontás második szakaszának eredménye}
-\label{fig:page 2}
+\label{fig:page 3}
 \end{figure}
 
-Eredményül megkaptuk a dokumentumot egységekre bontva. Ezek után már csak azt kell megvizsgálni, hogy az adott egység kép vagy szöveg, és ennek megfelelően menteni. 
+Eredményül megkaptuk a dokumentumot egységekre bontva. Ezek után már csak azt kell megvizsgálni, hogy az adott egység kép vagy szöveg, és ennek megfelelően menteni.
 
 \begin{figure}[H]
 \centering
@@ -81,7 +88,7 @@ Eredményül megkaptuk a dokumentumot egységekre bontva. Ezek után már csak a
 \label{fig:line}
 \end{figure}
 
-A vizsgálathoz azt a tényt használtam fel, hogy ah a szöveg akár csak egy sorból is áll, alatta és felette mindenképp található világos intenzitás (nem biztos hogy teljesen fehér, hiszen a szöveg vonala alá érő betűknek, mint például a p, a szára beletartozik az adott intenzitásba így az már nem tiszta fehér). Az algoritmus világos intenzitást keres elsőnek. Amint talál legalább 2 egységnyi világos területet (240 feletti intenzitás), abban az esetben az adott ponttól elindul, és megnézi hogy talál-e egybefüggő sötét területet (240 alatti intenzitás). Amennyiben igen, megvizsgálja hogy a sötét intenzitású terület után talál egy újabb fehér részt. Amennyiben erre is az a válasz hogy igen, az algoritmus arra a következtetésre jut hogy az adott egység szöveget tartalmaz, így azt a paragrafusokhoz menti, egyébként pedig a képekhez. Természetesen az algoritmus elég kezdetleges, így könnyen át lehet verni egy világos hátterű, középen sötét árnyalatú objektumot tartalmazó képpel. (lásd \ref{fig:tree}. ábra (?)) 
+A vizsgálathoz azt a tényt használtam fel, hogy ha a szöveg akár csak egy sorból is áll, alatta és felette mindenképp található világos intenzitás (nem biztos hogy teljesen fehér, hiszen a szöveg vonala alá érő betűknek, mint például a p, a szára beletartozik az adott intenzitásba így az már nem tiszta fehér). Az algoritmus világos intenzitást keres elsőnek. Amint talál legalább 2 egységnyi világos területet (240 feletti intenzitás), abban az esetben az adott ponttól elindul, és megnézi hogy talál-e egybefüggő sötét területet (240 alatti intenzitás). Amennyiben igen, megvizsgálja hogy a sötét intenzitású terület után talál egy újabb fehér részt. Amennyiben erre is az a válasz hogy igen, az algoritmus arra a következtetésre jut hogy az adott egység szöveget tartalmaz, így azt a paragrafusokhoz menti, egyébként pedig a képekhez. Természetesen az algoritmus elég kezdetleges, így könnyen át lehet verni egy világos hátterű, középen sötét árnyalatú objektumot tartalmazó képpel. (lásd \ref{fig:tree}. ábra (?))
 
 \begin{figure}[H]
 \centering
@@ -105,3 +112,27 @@ Következő lépésként egy szintet visszább léptem, és most nem a karaktere
 Ezen tapasztalataim után nekiláttam az ocr paramétereinek a vizsgálatához, és néhány beállítással sikerült elérnem hogy az ocr működjön karakter szinten is. Ehhez a paraméterek változtatása mellett biztosítottam, hogy az általam kivágott betűk körül mindig legyen egy fehér színű, 10 képpont méretű keret, ezzel segítve a programot a sikeresebb felismerésben. A betűtípustól függően akadnak itt is kisebb-nagyobb hibák. A word alapértelmezett Calibri betűtípusában szereplő l betű az tulajdonképpen egy vonal, így azt a program a | (AltGr + W) karakterként ismeri fel. Emellett gyakran összetéveszti a c betűt az e betűvel, a vesszőt pedig a ponttal.
 
 Ezek természetesen az eddigi hibákhoz képest sokkal biztatóbb eredmények, és így a kapott szöveg már olvasható. 
+
+A különböző szöveg szerkezeti egységeken való OCR használat kapcsán elvégeztem néhány tesztet. Megvizsgáltam, hogy az adott szinteken (oldal, bekezdés, sor, szó, karakter) milyen időkülönbséggel fut le a karakterfelismerő. Minden esetben a \ref{fig:mf_2}. ábra pdf dokumentumát használtam bemenetként. Ez egy egy oldalas dokumentum amely 672 szót és 4520 karaktert tartalmaz. Az eredmény a következő grafikonon látható (\ref{fig:test ocr}. ábra)
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=1]{images/test_ocr.png}
+\caption{Az OCR futásának ideje másodpercben különböző szöveg szerkezeti egységeken}
+\label{fig:test ocr}
+\end{figure}
+
+Amikor az ocr egy nagyobb egységet kapott feldolgozásra, akár egybe egy oldalnyi szöveget, egy bekezdést vagy csak egy sort, csekély, mindössze 5-20 másodperces különbséggel már ki is számolta(?) az eredményt. Viszont amikor már kisebb egységekkel volt dolga, sokkal több időbe telt neki mire megtalálta a legmegfelelőbb karakter. A szavaknál már olyan átlag 180 másodpercet, míg a karaktereknél ez olyan átlag 930 másodpercet vett igénybe. 
+
+Ez a különbség főként abból adódhat, hogy bizonyos karaktereknél szüksége van az OCR-nek viszonyítási alapra, önmagában nem tudja biztosan megmondani hogy milyen karaktert kapott. Tegyük fel hogy beadunk neki egy sima 'v' betűt. Ha nincs mellette viszonyítási alap, tegyük fel egy 'a' betű, akkor a 'v' az lehet kicsi és nagy betű is. Viszont ha már egybe látja az OCR a kettő betűt, 'av' akkor már megtudja állapítani hogy a karakter az kicsi. Tapasztalatom szerint ez a szavak szintjén sem kielégítő, viszont a sorok szintjén már elég nagy pontossággal megtudja különböztetni a kis- és nagybetűket.
+
+A tesztet elvégeztem különböző betűtípusok esetén (Calibri, Arial, Times New Roman). Arra a kérdésre kerestem a választ hogy megnehezítik-e a feldolgozást bizonyos betűtípusok vagy sem. Mint az a \ref{fig:test font}. ábrán látható, nem nagy az eltérés a különböző betűtípusok feldolgozása között. A három példa közül az Arial volt aminek a kiértékelése több időt vett igénybe minden szöveg szerkezeti egységen, de ez is nagyon csekély eltérés, így az ábrán nem is szembetűnő.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=1]{images/test_ocr_font_types.png}
+\caption{Az OCR futásának ideje betűtípusok összehasonlításával (?)}
+\label{fig:test font}
+\end{figure}
+
+Azon kívül, hogy a feldolgozása a nagyobb szöveg egységeknek gyorsabb, a tesztek során az is kiderült, hogy pontosabb is. Ez első sorban a már fentebb említett karakterek egymáshoz való viszonyításának köszönhető, hiszen itt bőven akad betű amihez viszonyíthatjuk a többit. Azért a karakterek szintjén történő ocr használatát sem kell kizárni a lehetőségek közül, mivel annál is minden esetben 75\% feletti volt az eredmény pontossága. Itt a legtöbb hibát a fentebb említetten kívül az okozza, hogy különböző betűtípusokban találhatók egymásra nagyon hasonlító betűk. 
