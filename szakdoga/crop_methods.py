@@ -2,7 +2,7 @@ import numpy as np
 import pytesseract
 from PIL import ImageOps
 
-tessdata_dir_config = '--psm 13 --oem 1'
+tessdata_dir_config = '--psm 6 --oem 3'
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 paragraph_number = 0
@@ -23,7 +23,8 @@ def crop_paragraphs(paragraph_coordinates, image, margins, height):
         image_crop = image.crop((margins[0], height-paragraph_coordinates[i], margins[2], height-paragraph_coordinates[i-1]))
         if not seek_for_columns(image_crop):
             if is_paragraph(image_crop):
-                image_crop = ImageOps.expand(image_crop, 5, 'white')
+                write_words_to_file(image_crop)
+                write_text_to_file()
                 image_crop.save('img_crop_paragraphs/paragraph_crop'+ format(paragraph_number) +'.png', 'PNG')
                 paragraph_number = paragraph_number+1
             else:
@@ -70,7 +71,6 @@ def crop_characters(characters_coordinates, image, height, width):
     global character_number
     for i in range(0,len(characters_coordinates)-2,2):
         image_crop = image.crop((characters_coordinates[i], 0, characters_coordinates[i+1], height))
-        write_words_to_file(image_crop)
         image_crop.save('img_crop_characters/character_crop'+ format(character_number) +'.png', 'PNG')
         character_number = character_number+1
     return character_number
@@ -97,6 +97,8 @@ def seek_for_columns(image):
         for i in range(0,len(coordinates)-1,2):
             image_crop = image.crop((coordinates[i], 0, coordinates[i+1], height))
             if  is_paragraph(image_crop):
+                write_words_to_file(image_crop)
+                write_text_to_file()
                 image_crop.save('img_crop_paragraphs/paragraph_crop'+ format(paragraph_number) + '.png', 'PNG')
                 paragraph_number = paragraph_number+1
             else:
@@ -142,7 +144,7 @@ def get_coordinates(width, intensity_x):
     for i in range(0,width-1):
         if intensity_x[i] == 255.0:
             same_intensity = same_intensity+1
-            if same_intensity > 15 and not_saved:
+            if same_intensity > 20 and not_saved:
                 paragraph_coordinates.append(i-same_intensity+1)
                 not_saved = False
         else:
@@ -163,11 +165,11 @@ def write_words_to_file(character_image):
         else: 
             text = text + '?'
     else:
-        text = text + ' '
+        text = text + '\n'
 
 def write_text_to_file():
     global text
-    text = text + '\n'
+    text = text + '\n\n'
     file = open('text.txt', 'a', encoding="utf-8")
     file.write(text)
     file.close()

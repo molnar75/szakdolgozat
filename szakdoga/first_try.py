@@ -48,6 +48,8 @@ if __name__ == '__main__':
         intensity_x = image_gray.sum(axis=0) / height
         intensity_y = np.flip(intensity_y)
         
+        get.get_basic_datas(intensity_y, height)
+        
         draw_intensity(i)
         
         margins = get.get_margins(width, height, intensity_x, intensity_y)
@@ -71,6 +73,7 @@ if __name__ == '__main__':
         line_coordinates = get.get_lines(height, intensity_y)
         line_number = crop.crop_lines(line_coordinates, paragraph, width, height)
     print('Crop lines done!')
+    
     for i in range(line_number):
         print(format(i + 1) + '/' + format(line_number) + ' line', end='\r')
         line_read = cv2.imread('img_crop_lines/line_crop' + format(i) + '.png')
@@ -84,10 +87,19 @@ if __name__ == '__main__':
         intensity_x = line_gray.sum(axis=0) / height
         words_coordinates = get.get_words(width, intensity_x)
         word_number = crop.crop_words(words_coordinates, line, height, width) 
-        
-        characters_coordinates = get.get_characters(width, intensity_x)
-        character_number = crop.crop_characters(characters_coordinates, line, height, width)
-        crop.write_text_to_file()
     print('Crop words done!')
+    for i in range(word_number):
+        print(format(i + 1) + '/' + format(word_number) + ' words', end='\r')
+        word_read = cv2.imread('img_crop_words/word_crop' + format(i) + '.png')
+        word_gray = cv2.cvtColor(word_read, cv2.COLOR_BGR2GRAY)
+        
+        word = Image.fromarray(word_gray)
+        pix = word.load()
+        width = word.size[0]
+        height = word.size[1]
+    
+        intensity_x = word_gray.sum(axis=0) / height
+
+        characters_coordinates = get.get_characters(width, intensity_x)
+        character_number = crop.crop_characters(characters_coordinates, word, height, width)
     pass
-#TODO crop from the top of the page to the bottom
