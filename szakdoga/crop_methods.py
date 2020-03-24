@@ -144,7 +144,7 @@ def get_coordinates(width, intensity_x):
     for i in range(0,width-1):
         if intensity_x[i] == 255.0:
             same_intensity = same_intensity+1
-            if same_intensity > 20 and not_saved:
+            if same_intensity > 50 and not_saved:
                 paragraph_coordinates.append(i-same_intensity+1)
                 not_saved = False
         else:
