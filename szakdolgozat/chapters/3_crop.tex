@@ -111,7 +111,7 @@ Következő lépésként egy szintet visszább léptem, és most nem a karaktere
 
 Ezen tapasztalataim után nekiláttam az ocr paramétereinek a vizsgálatához, és néhány beállítással sikerült elérnem hogy az ocr működjön karakter szinten is. Ehhez a paraméterek változtatása mellett biztosítottam, hogy az általam kivágott betűk körül mindig legyen egy fehér színű, 10 képpont méretű keret, ezzel segítve a programot a sikeresebb felismerésben. A betűtípustól függően akadnak itt is kisebb-nagyobb hibák. A word alapértelmezett Calibri betűtípusában szereplő l betű az tulajdonképpen egy vonal, így azt a program a | (AltGr + W) karakterként ismeri fel. Emellett gyakran összetéveszti a c betűt az e betűvel, a vesszőt pedig a ponttal.
 
-Ezek természetesen az eddigi hibákhoz képest sokkal biztatóbb eredmények, és így a kapott szöveg már olvasható. 
+Ezek természetesen az eddigi hibákhoz képest sokkal biztatóbb eredmények, és így a kapott szöveg már olvasható.
 
 A különböző szöveg szerkezeti egységeken való OCR használat kapcsán elvégeztem néhány tesztet. Megvizsgáltam, hogy az adott szinteken (oldal, bekezdés, sor, szó, karakter) milyen időkülönbséggel fut le a karakterfelismerő. Minden esetben a \ref{fig:mf_2}. ábra pdf dokumentumát használtam bemenetként. Ez egy egy oldalas dokumentum amely 672 szót és 4520 karaktert tartalmaz. Az eredmény a következő grafikonon látható (\ref{fig:test ocr}. ábra)
 
@@ -122,7 +122,7 @@ A különböző szöveg szerkezeti egységeken való OCR használat kapcsán elv
 \label{fig:test ocr}
 \end{figure}
 
-Amikor az ocr egy nagyobb egységet kapott feldolgozásra, akár egybe egy oldalnyi szöveget, egy bekezdést vagy csak egy sort, csekély, mindössze 5-20 másodperces különbséggel már ki is számolta(?) az eredményt. Viszont amikor már kisebb egységekkel volt dolga, sokkal több időbe telt neki mire megtalálta a legmegfelelőbb karakter. A szavaknál már olyan átlag 180 másodpercet, míg a karaktereknél ez olyan átlag 930 másodpercet vett igénybe. 
+Amikor az ocr egy nagyobb egységet kapott feldolgozásra, akár egybe egy oldalnyi szöveget, egy bekezdést vagy csak egy sort, csekély, mindössze 5-20 másodperces különbséggel már ki is számolta(?) az eredményt. Viszont amikor már kisebb egységekkel volt dolga, sokkal több időbe telt neki mire megtalálta a legmegfelelőbb karakter. A szavaknál már olyan átlag 180 másodpercet, míg a karaktereknél ez olyan átlag 930 másodpercet vett igénybe.
 
 Ez a különbség főként abból adódhat, hogy bizonyos karaktereknél szüksége van az OCR-nek viszonyítási alapra, önmagában nem tudja biztosan megmondani hogy milyen karaktert kapott. Tegyük fel hogy beadunk neki egy sima 'v' betűt. Ha nincs mellette viszonyítási alap, tegyük fel egy 'a' betű, akkor a 'v' az lehet kicsi és nagy betű is. Viszont ha már egybe látja az OCR a kettő betűt, 'av' akkor már megtudja állapítani hogy a karakter az kicsi. Tapasztalatom szerint ez a szavak szintjén sem kielégítő, viszont a sorok szintjén már elég nagy pontossággal megtudja különböztetni a kis- és nagybetűket.
 
@@ -136,3 +136,20 @@ A tesztet elvégeztem különböző betűtípusok esetén (Calibri, Arial, Times
 \end{figure}
 
 Azon kívül, hogy a feldolgozása a nagyobb szöveg egységeknek gyorsabb, a tesztek során az is kiderült, hogy pontosabb is. Ez első sorban a már fentebb említett karakterek egymáshoz való viszonyításának köszönhető, hiszen itt bőven akad betű amihez viszonyíthatjuk a többit. Azért a karakterek szintjén történő ocr használatát sem kell kizárni a lehetőségek közül, mivel annál is minden esetben 75\% feletti volt az eredmény pontossága. Itt a legtöbb hibát a fentebb említetten kívül az okozza, hogy különböző betűtípusokban találhatók egymásra nagyon hasonlító betűk. 
+
+Eddig beégetett, tapasztalati küszöb értéket használtam a sorok és a paragrafusok elkülönítésére. Mivel minden dokumentumnak más térközei, betűméretei lehetnek így ez nem megfelelő minden pdf-re. Ezért mielőtt megkezdenéma  dokumentum feldolgozását, meghatározom az adott értékeket és egy globális változóba letárolva azokat használom fel a számítások során. 
+
+Az y tengely menti intenzitást vizsgálom, méghozzá azon belül is az összefüggő világos (háttér) intenzitásokat keresem. Amint más intenzitást találok, abban az esetben az eddigi összefüggő rész nagyságát lementem, majd a számolást újra kezdve haladok tovább. Eredményül egy listát kapok ami tartalmazza a térközök nagyságát.
+
+A \ref{fig:mf_2} dokumentum térközeinek eloszlása a következő ábrán látható (\ref{fig:spacing}. ábra)  
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=1]{images/spacing.png}
+\caption{A \ref{fig:mf_2} dokumentum térközeinek eloszlása}
+\label{fig:spacing}
+\end{figure}
+
+Az ábrából jól kivehető hogy 3 fő csomópontja van a térközöknek. A bal szélső a sorköz, a középső a bekezdés majd az utolsó a margó. Ezen csomópontok kezdeti értéke között mindig legalább 10 lesz a  különbség, ezt használom fel a küszöbértékek meghatározásához. Miután megkaptam az adott nagyságokat, a collections könyvtár Counter metódusával rendezem őket, így megkapom hogy milyen nagyságú intenzitásból mennyi van összesen a dokumentumban. Ezeket növekvő sorrendbe rendezem. Elindítok egy ciklust, és a 3-nál nagyobb elemeket vizsgálom, mivel a 3 és a kisebb nagyságú térköz nagy valószínűséggel csak zaj. Az első elemet lementem küszöbértéknek, majd tőle elindulva egy új ciklussal addig vizsgálom az térköz nagyságokat amíg nem lesz nagyobb a kettő különbsége mint 10. Amint ez igaz, az eddigi köszöbértéket lementem egy listába, és az utoljára vizsgált érték lesz az új küszöböm.
+
+Végeredményül kapok egy listát, ami a \ref{fig:spacing}. ábrán látható csomópontok kezdeti értékét tartalmazza. Ennek a listának a 0. eleme lesz a sorköz, az 1. eleme a térköz és a 3-4. eleme pedig az alsó-felső margó.      
