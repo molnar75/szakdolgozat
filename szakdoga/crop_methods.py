@@ -1,6 +1,8 @@
 import numpy as np
 import pytesseract
 from PIL import ImageOps
+from keras.models import load_model
+import cv2
 
 tessdata_dir_config = '--psm 6 --oem 3'
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
@@ -11,6 +13,7 @@ line_number = 0
 word_number = 0
 character_number = 0
 text = ''
+model = load_model('paragraph_or_image.h5')
 
 def crop_margins(i, image, margins, height):
     image_crop = image.crop((margins[0], height-margins[1], margins[2],height-margins[3]))
@@ -109,6 +112,17 @@ def seek_for_columns(image):
         return False
     
 def is_paragraph(image):
+    img = np.array(image)
+    img = cv2.resize(img, (32, 32))
+    img = np.expand_dims(img, axis=-1)
+    img = np.expand_dims(img, axis=0)
+    probabilities = model.predict(img)
+    index = np.argsort(probabilities[0, :])
+    if index[1] == 0:
+        return True
+    else:
+        return False
+    '''
     width = image.size[0]
     
     image_numpy = np.array(image)
@@ -136,6 +150,7 @@ def is_paragraph(image):
         else:
             same_bright_intensity = 0
     return is_paragraph
+    '''
 
 def get_coordinates(width, intensity_x):
     same_intensity = 0

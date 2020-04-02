@@ -19,9 +19,13 @@ def get_basic_datas(intensity_y, height):
     intensity_list.append(same_intensity)
     spacing = get_spacing(Counter(intensity_list).most_common())
     global line_min
-    line_min = spacing[0]
     global paragraph_min
-    paragraph_min = spacing[1]
+    if len(spacing) > 2:
+        line_min = spacing[0]
+        paragraph_min = spacing[1]
+    else: 
+        line_min = 10
+        paragraph_min = 40
     
 def get_spacing(count_list):
     values =  []
@@ -54,6 +58,10 @@ def get_spacing(count_list):
     return spacing
 
 def get_margins(width, height, intensity_x, intensity_y):
+    left_margin = 0
+    right_margin = 0
+    bottom_margin = 0
+    top_margin = 0
     for i in range(1, width - 1):
         if intensity_x[i] != intensity_x[i - 1]:
             left_margin = i
