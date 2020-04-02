@@ -48,6 +48,8 @@ A szavakra bontásnál szükségem van az eddig levágott sorokra, így egy for 
 
 A szavak betűkre bontása már egy érdekesebb témakör. Ennél az algoritmusnál már nem a világos, hanem épp hogy a sötét részeket kerestem, és ha már 1 pixelnek megfelelő sötét részt is találtam már mentettem az adott indexet. Ez a legtöbb esetben szépen működött és megkaptam egyesével a betűket. Viszont a ligatúrák esetében a betűk egymásba lógnak, ezért az algoritmusom nem vágta szét őket, hanem egybe mentette le. Ilyen esetek voltak például az r és az f vagy t találkozása, vagy például a dupla t vagy f betűk.
 
+\Section{Bonyolultabb dokumentumok}
+
 \begin{figure}[H]
 \centering
 \includegraphics[scale=1]{images/page.png}
@@ -103,6 +105,8 @@ Mivel az intenzitás vizsgálat a lap aljáról indul, így a lista pont fordít
 
 Ezzel a dokumentumom fel van bontva a legapróbb egységre (karakter) és megfelelő sorrendben követik egymást az egységek, így következhet a karakter felismerő (optical character recognition (OCR)).
 
+\Section{OCR}
+
 A python egyik ocr eszközét (tool?) a Python-tesseract-ot hívtam segítségül (?). Első lépésben a karakter levágásnál átadtam a pytesseract \texttt{image\_to\_string} nevű metódusának a képet, majd a válaszként kapott stringet hozzá fűztem egy már meglévő stringemhez. Amint végig ért a metódus minden soron, egy külső fileba lementettem a megkapott szöveget. Sajnos azt tapasztaltam hogy az OCR egyetlen karaktert sem ismert fel.
 
 Ebből arra következtettem hogy a felbontása az adott képnek túl alacsony lehet, így megpróbálkoztam egy nagyobb felbontású képpel, de sajnos úgy sem jártam sikerrel.
@@ -135,13 +139,15 @@ A tesztet elvégeztem különböző betűtípusok esetén (Calibri, Arial, Times
 \label{fig:test font}
 \end{figure}
 
-Azon kívül, hogy a feldolgozása a nagyobb szöveg egységeknek gyorsabb, a tesztek során az is kiderült, hogy pontosabb is. Ez első sorban a már fentebb említett karakterek egymáshoz való viszonyításának köszönhető, hiszen itt bőven akad betű amihez viszonyíthatjuk a többit. Azért a karakterek szintjén történő ocr használatát sem kell kizárni a lehetőségek közül, mivel annál is minden esetben 75\% feletti volt az eredmény pontossága. Itt a legtöbb hibát a fentebb említetten kívül az okozza, hogy különböző betűtípusokban találhatók egymásra nagyon hasonlító betűk. 
+Azon kívül, hogy a feldolgozása a nagyobb szöveg egységeknek gyorsabb, a tesztek során az is kiderült, hogy pontosabb is. Ez első sorban a már fentebb említett karakterek egymáshoz való viszonyításának köszönhető, hiszen itt bőven akad betű amihez viszonyíthatjuk a többit. Azért a karakterek szintjén történő ocr használatát sem kell kizárni a lehetőségek közül, mivel annál is minden esetben 75\% feletti volt az eredmény pontossága. Itt a legtöbb hibát a fentebb említetten kívül az okozza, hogy különböző betűtípusokban találhatók egymásra nagyon hasonlító betűk.
 
-Eddig beégetett, tapasztalati küszöb értéket használtam a sorok és a paragrafusok elkülönítésére. Mivel minden dokumentumnak más térközei, betűméretei lehetnek így ez nem megfelelő minden pdf-re. Ezért mielőtt megkezdenéma  dokumentum feldolgozását, meghatározom az adott értékeket és egy globális változóba letárolva azokat használom fel a számítások során. 
+\Section{Küszöbértékek meghatározása}
+
+Eddig beégetett, tapasztalati küszöb értéket használtam a sorok és a paragrafusok elkülönítésére. Mivel minden dokumentumnak más térközei, betűméretei lehetnek így ez nem megfelelő minden pdf-re. Ezért mielőtt megkezdenéma  dokumentum feldolgozását, meghatározom az adott értékeket és egy globális változóba letárolva azokat használom fel a számítások során.
 
 Az y tengely menti intenzitást vizsgálom, méghozzá azon belül is az összefüggő világos (háttér) intenzitásokat keresem. Amint más intenzitást találok, abban az esetben az eddigi összefüggő rész nagyságát lementem, majd a számolást újra kezdve haladok tovább. Eredményül egy listát kapok ami tartalmazza a térközök nagyságát.
 
-A \ref{fig:mf_2} dokumentum térközeinek eloszlása a következő ábrán látható (\ref{fig:spacing}. ábra)  
+A \ref{fig:mf_2} dokumentum térközeinek eloszlása a következő ábrán látható (\ref{fig:spacing}. ábra)
 
 \begin{figure}[H]
 \centering
@@ -152,4 +158,56 @@ A \ref{fig:mf_2} dokumentum térközeinek eloszlása a következő ábrán láth
 
 Az ábrából jól kivehető hogy 3 fő csomópontja van a térközöknek. A bal szélső a sorköz, a középső a bekezdés majd az utolsó a margó. Ezen csomópontok kezdeti értéke között mindig legalább 10 lesz a  különbség, ezt használom fel a küszöbértékek meghatározásához. Miután megkaptam az adott nagyságokat, a collections könyvtár Counter metódusával rendezem őket, így megkapom hogy milyen nagyságú intenzitásból mennyi van összesen a dokumentumban. Ezeket növekvő sorrendbe rendezem. Elindítok egy ciklust, és a 3-nál nagyobb elemeket vizsgálom, mivel a 3 és a kisebb nagyságú térköz nagy valószínűséggel csak zaj. Az első elemet lementem küszöbértéknek, majd tőle elindulva egy új ciklussal addig vizsgálom az térköz nagyságokat amíg nem lesz nagyobb a kettő különbsége mint 10. Amint ez igaz, az eddigi köszöbértéket lementem egy listába, és az utoljára vizsgált érték lesz az új küszöböm.
 
-Végeredményül kapok egy listát, ami a \ref{fig:spacing}. ábrán látható csomópontok kezdeti értékét tartalmazza. Ennek a listának a 0. eleme lesz a sorköz, az 1. eleme a térköz és a 3-4. eleme pedig az alsó-felső margó.      
+Végeredményül kapok egy listát, ami a \ref{fig:spacing}. ábrán látható csomópontok kezdeti értékét tartalmazza. Ennek a listának a 0. eleme lesz a sorköz, az 1. eleme a térköz és a 3-4. eleme pedig az alsó-felső margó.
+
+\Section{Képfelismerés neurális háló segítségével}
+
+A programom fő része maga a paragrafusokra bontás, és az ilyenkor történő képfelismerés. Ekkor dönti el a program hogy érdemes-e az adott résszel foglalkozni, vagy sem. Amennyiben egy szöveget tartalmazó bekezdés a képekhez kerül, a rajta levő szöveg nem értékelődik ki. Amennyiben a kép a szövegeknél marad a program megpróbálja apróbb részekre bontani, és sok felesleges képet ment le a különböző mappákba. De ami a legfontosabb, mind a két eset azt eredményezi, hogy a kapott szöveg minősége romlik. Vagy kimarad belőle több bekezdés, vagy a képek helyére ? vagy egyéb oda nem illő karakter kerül.
+
+Nyilvánvalóvá vált hogy ezen a téren fejlődnie kell a programnak, ezért elkezdtem foglalkozni a neurális hálókkal, méghozzá a pythonban megtalálható keras nevezetű neurális háló API-val. A keras fő építőeleme a model, ami lehetőséget ad a különböző layerek (?) kezelésére. Első lépésben configurálni kell a modellünket, megadni hogy hány és milyen rétegeket szeretnénk használni, majd jöhet a betanítás. Én egy szekvenciális modellt használtam, 2 convolution és 2 pooling layerrel (?). A betanítás során 150 képet adtam be a modellemnek, egyenként 32x32-es méretűeket. Ahhoz, hogy pontosabb eredményt érjünk el, sokkal több tanuló képre lenne szükség. A betanítás eredménye az alábbi két ábrán látható. (\ref{fig:accuracy}. ábra és \ref{fig:loss}. ábra)
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=1]{images/accuracy.png}
+\caption{A modell pontossága}
+\label{fig:accuracy}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=1]{images/loss.png}
+\caption{A modell vesztesége}
+\label{fig:loss}
+\end{figure}
+
+Jól látható hogy a futások számával növekszik a pontosság és csökken a veszteség. A modell a mintákat 85\% feletti pontossággal tudta beazonosítani a 10. futás során. Ez egy egészen elfogadható arány, így megkezdhetjük a program tesztelését.
+
+\Section{Program tesztelése}
+
+A programot átírtam úgy, hogy egymás után olvassa be a pdf-eket és mindegyiknek az eredményeit egy külön mappába mentse. Összesen 50 dokumentumot gyűjtöttem, amelyeknek különböző a méretük, struktúrájuk és a betűtípusuk. A tesztelés arra irányult hogy kiderüljön hogy a program mennyire stabil, milyen pontossággal nyeri ki az adatokat az adott pdf-ből és hogy rávilágítson a program hiányosságaira. A gép adatai amin teszteltem: 8GB RAM, Intel(R) Core(TM) I5-9400F 2.90 GHz processzor, 64 bites Windows operációs rendszer.(?)
+
+\SubSection{Oldalszám}
+
+ A program úgy működik, hogy beolvassa az összes oldalt a memóriába, és utána egyenként dolgozza fel őket. Ez nagyban lassítja a több oldalas dokumentumok feldolgozását és a magas oldalszámú pdf-két pedig ellehetetleníti. Tapasztalatom szerint olyan 150 oldalas dokumentum az, amit még a program az adott körülmények között kiértékel. A futási sebességek a következő ábrán láthatók (\ref{fig:runtime} . ábra).
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=1]{images/runtime.png}
+\caption{Futási idő a dokumentum oldalainak száma szerint}
+\label{fig:runtime}
+\end{figure}
+
+Mint azt az ábra mutatja, a futási idő nem csak az oldalszámtól, hanem a pdf bonyolultságától is függ. Ezért lehetséges az, hogy egy 90 oldalas dokumentumot hamarabb feldolgozott a program mint egy 81 oldalasat. Az átlagos futási idő 8,44 sec/oldal volt a tesztelés során, az oldalszámok szerinti átlagot a piros vonal mutatja.
+
+\SubSection{A paragrafusok feldolgozásának a helyessége és a szöveg helyességének a viszonya}
+
+Mint már említettem, a paragrafusok feldolgozására épül minden más mozzanat. Mégis amit a legjobban befolyásol, az a kimeneti szövegnek a helyessége. A tesztelt dokumentumoknál a paragrafusok kivágásának a helyessége 83.99\%, míg a szövegnek 76.63\% volt. A következő ábra a paragrafusok és a szöveg helyességét hasonlítja össze minden egyes dokumentumra. (\ref{fig:paragraph and text}. ábra)
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=1]{images/paragraph_and_text.png}
+\caption{A paragrafusok és a szöveg helyességének az összehasonlítása}
+\label{fig:paragraph and text}
+\end{figure}
+
+Az ábrán jól kivehető, hogy szinte minden dokumentumra a paragrafusok feldolgozása 60\%, míg a szöveg helyessége 50\% felett volt. Két dokumentum esetében mind a kettő érték nulla, mivel az adott pdf-ek csak képeket tartalmaztak, így azok jelen esetben nem relevánsak. Az esetek 79.17\%-ban (38 esetben, a két képeket tartalmazó dokumentumokat nem számolva) ahogy romlott a paragrafusok helyességének aránya, úgy romlott vele a szöveg helyességének az aránya is. A legtöbb hiba a képek és paragrafusok megkülönböztetése miatt adódott. Szinte minden esetben előfordult hogy legalább 1 paragrafust a képekhez, vagy egy képet a paragrafusokhoz sorolt az algoritmus.  
