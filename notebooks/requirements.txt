@@ -1,0 +1,6 @@
+numpy
+opencv-python
+sklearn
+jupyter
+matplotlib
+pdf2image
