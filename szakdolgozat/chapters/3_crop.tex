@@ -1,42 +1,119 @@
 \Chapter{A dokumentum strukturális elemzése}
 
-Elkészítettem egy olyan programot, amely beolvassa a megadott PDF dokumentumot, majd az oldalait PNG kiterjesztésű képpé konvertálja és lementi a megadott mappába.
-Ez a programban a következőképpen hajtható végre.
+A strukturális elemzés első lépése a beolvasott, PDF formátumú dokumentumok PNG formátumú képekké való konverziója.
+A PDF formátum megválasztását az indokolta, hogy az tekinthető a leginkább elterjedt, és a legtöbb esetben átvihető formátumnak.
+Az átvihetőségből egyúttal az is adódik, hogy a dokumentumban a szövegek elrendezése karakter szintjén kötött lehet, a megjelenés ugyan egységes, viszont például az egybefüggő szövegrészek kijelölése, kimásolása már problémát jelenthet.
+A PNG formátum esetében szintén az elterjedtsége, szabványos kialakítása volt az egyik fő szempont, de e mellett lényeges előny, hogy tömörített és veszteségmentes módon képes tárolni a képpontok intenzitásait.
+
+\Section{A PDF dokumentum beolvasása}
+
+% TODO: https://pypi.org/project/pdf2image/
+A dokumentumok képpé konvertálásához a \texttt{pdf2image} függvénykönyvtárt használtam [].
+Ez paraméterként egyszerűbb esetben a PDF dokumentum elérési útvonalát és a kép méretét várja.
+(A méret megadásánál a képarány megtartása mellett opcionális lehet a kép magassága vagy szélessége.)
+
+% TODO: https://pypi.org/project/Pillow/
+A beolvasást követően egy \textit{Pillow} [] függvénykönyvtár formátumának megfelelő képobjektum jön létre.
+% TODO: NumPy hivatkozás (könyvre lehetőleg)
+A \textit{Pillow} manapság már nem tekinthető korszerű eszköznek, ezért a beolvasott képeket \textit{NumPy} [] mátrixokká konvertálom.
+A beolvasás és az átalakítás a \texttt{test2.pdf} esetében az alábbi módon valósítható meg.
 
 \begin{python}
-images = convert_from_path('pdf_files/testpdf.pdf')
-numberOfPages = len(images)
-for i in range(numberOfPages):
-    images[i].save('images/test' + format(i) + '.png', 'PNG')
+import cv2
+import numpy as np
+from pdf2image import convert_from_path
+
+pil_images = convert_from_path('samples/test2pdf.pdf', size=(2500, None))
+images = [
+    cv2.cvtColor(np.array(pil_image), cv2.COLOR_BGR2GRAY)
+    for pil_image in pil_images
+]
 \end{python}
 
-Amint megvannak az oldalak, beolvassa őket, majd fekete-fehér képpé alakítja mindegyiket. Kezdeti lépésnek a margók levágását majd a paragrafusokra bontást, később pedig a sorokra, szavakra, majd betűkre bontás volt a cél. Jelenleg a paragrafusokra bontás már stabilan működik.
+A listára és a \texttt{for} ciklusra itt azért van szükség, mert a PDF több oldalt is tartalmaz (és nyilván általában tartalmazhat).
 
-Ahhoz, hogy meg tudjam állapítani, hogy hol kezdődik a szöveg, és hol található összefüggő fehér rész (margó, sorköz stb.), intenzitást kellett számolnom a kép minden sorára és oszlopára (255: fehér, 0: fekete). Ehhez összeadtam a pixelek értékeit, majd elosztottam azok számával. Ezzel eredményül kaptam egy $x$ és egy $y$ tengely menti tömböt, amelyek az oszlopok és a sorok menti intenzitás átlagokat tartalmazzák.
+A \texttt{cvtColor} egy \textit{OpenCV} könyvtárhoz tartozó függvény, amelyik segítségével a kép szürkeárnyalatos képpé konvertálását végzem.
+A strukturális elemzés alapvetően olyan kontrasztos képekre készült, amelyeknél a színek nem jelentenek lényegi információt a feldolgozás szempontjából.
 
+\Section{Margók becslése}
+
+Amint megvannak az oldalak, majd szürkeárnyalatos képpé alakításuk, a margók levágása következik. Az elemzés a nagyobb egységektől a kisebbek felé történik, vagyis ezt a paragrafusokra, sorokra, szavakra majd azokon belül a karakterekre vonatkozó elemzés követi majd.
+
+Ahhoz, hogy meg tudjam állapítani, hogy hol kezdődik a szöveg, és hol található összefüggő fehér rész (margó, sorköz stb.), intenzitást kellett számolnom a kép minden sorára és oszlopára (255: fehér, 0: fekete). Ehhez átlagoltam a pixelek intenzitásának értékeit. Ezzel eredményül kaptam egy $x$ és egy $y$ tengely menti tömböt, amelyek az oszlopok és a sorok menti intenzitás átlagokat tartalmazzák.
+A számítás \texttt{NumPy} segítségével egyszerűen elvégezhető.
+Tegyük fel, hogy a vizsgált kép az \texttt{image} nevű változóban található.
+Ekkor a sorokhoz és oszlopokhoz tartozó átlagok (profilok) a következő formában számolhatók.
 \begin{python}
-intensity_y = img_gray.sum(axis=1) / width
-intensity_x = img_gray.sum(axis=0) / height
+row_profile = np.mean(image, axis=1)
+column_profile = np.mean(image, axis=0)
 \end{python}
+Ezt a két intenzitást \aref{fig:mf_2}. ábrával szemlélteti a program.
+% amit le is ment a megadott mappába.
+% TODO: A kép megjelenítési módjáról a Matplotlib kapcsán lehet írni. (axis-ok megadása)
 
-Ezt a két intenzitást \aref{fig:mf_2}. ábrával szemlélteti a program, amit le is ment a megadott mappába.
-
-\begin{figure}[h]
+\begin{figure}[h!]
 \centering
 \includegraphics[scale=1]{images/mf_2.png}
 \caption{A szegélyekre aggregált intenzitás értékek}
 \label{fig:mf_2}
 \end{figure}
 
-Ezt a két tengely menti intenzitás tömböt felhasználva már meg lehet állapítani, melyik pixelnél ér véget a margó és hol kezdődik a szöveg. Egy egyszerű ciklussal megvizsgálom a tömb elejétől indulva hogy meddig egyenlőek az intenzitások a 255 értékkel, majd lementem azt az indexet ahol megáll a programom. Ezt megismétlem a tömbön visszafelé haladva is, így lesz meg az alsó-felső, jobb-bal margó végpontja. Ezeket felhasználva a programom eltávolítja a margókat, majd lementi a képet a megadott mappába.
+Ezt a két tengely menti intenzitás tömböt felhasználva már meg lehet állapítani, melyik pixelnél ér véget a margó és hol kezdődik a szöveg. Egy egyszerű ciklussal megvizsgálom a tömb elejétől indulva hogy meddig egyenlőek az intenzitások a 255 értékkel, majd lementem azt az indexet ahol megáll a programom. Ezt megismétlem a tömbön visszafelé haladva is, így lesz meg az alsó-felső, jobb-bal margó végpontja. Ezeket felhasználva a programom már tudja kezelni a paragrafusokat tartalmazó képterületet.
+
+A változás helyének detektálását \texttt{find\_first\_change} és a \texttt{find\_last\_change} függvények végzik.
+Ezek a következőképpen kerültek megvalósításra.
+\begin{python}
+def find_first_change(values):
+    """
+    Find the index of the first changed value in the values.
+    :param values: an iterable array of comparable objects
+    :return: the i index where values[i - 1] != values[i]
+    """
+    i = 1
+    while i < len(values):
+        if values[i - 1] != values[i]:
+            return i
+        i += 1
+    raise ValueError('All values are the same!')
+\end{python}
 
 \begin{python}
-im1 = test.crop((left_margin,
-                 height - top_margin,
-                 right_margin,
-                 height - bottom_margin))
-im1.save('img_crop_margin/testcrop.png', 'PNG')
+def find_last_change(values):
+    """
+    Find the index of the last changed value in the values.
+    :param values: an iterable array of comparable objects
+    :return: the i index where values[i] != values[i + 1]
+    """
+    i = len(values) - 2
+    while i >= 0:
+        if values[i] != values[i + 1]:
+            return i
+        i -= 1
+    raise ValueError('All values are the same!')
+\end{python} 
+Ezek segítségével a margók a következő formában számolhatók.
+\begin{python}
+def calc_margins(image):
+    """
+    Calculate the margins of the image.
+    :param image: the NumPy array of page intensity image
+    :return: dictionary of the estimated margins
+    """
+    row_profile = np.mean(image, axis=1)
+    column_profile = np.mean(image, axis=0)
+    margins = {
+        'left': find_first_change(column_profile),
+        'right': find_last_change(column_profile),
+        'top': find_first_change(row_profile),
+        'bottom': find_last_change(row_profile)
+    }
+    return margins
 \end{python}
+Az ilyen formában becsült margókat a \texttt{matplotlib} függvénykönyvtár segítségével vissza is lehet rajzolni a képre.
+
+% TODO: Esetleg beletenni a margós megjelenítést végző kódrészt és az eredményét.
+
+\Section{Paragrafusokra bontás}
 
 A paragrafusokra bontás is hasonlóan működik. Elindulok a tömbömön, majd egy változóban számolom hogy hány 255 értékkel egyenlő intenzitást talál egymás után a program. Ha ez több mint 10 (tapasztalati érték) akkor hozzáadja egy tömbhöz a fehér szakasz kezdőpontját (\texttt{index - 10}), majd az ehhez tartozó végpontot (amint 255 értéktől eltérő intenzitást talál, lementi az előző indexet). Így lesz egy tömböm, ami egymás után tartalmazza egy-egy bekezdésnek a kezdő majd végpontját ($y$ tengely mentén). Ezután egy ciklussal szépen kivágom a paragrafusokat.
 
