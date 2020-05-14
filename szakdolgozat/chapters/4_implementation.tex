@@ -1,23 +1,47 @@
-\Chapter{Megvalósítás}
+\Chapter{A vizsgálatokhoz készített programok}
 
-A Python program szerkezetének bemutatása.
+Ahogy a korábbi fejezetekben már említésre került, a dolgozat Python programozási nyelven készült.
+A vizsgálatokhoz függőségként elsősorban a \textit{NumPy}, \textit{OpenCV} illetve a \textit{Mat\-plot\-lib} függvénykönyvtárak jelentek meg.
 
-\Section{Képek vágása}
+A kutatás, algoritmus fejlesztés és paraméterkeresés esetében \textit{Jupyter} munkafüzetekbe kerültek a kifejlesztett módszerek.
+A karakterek felismerése egy külön, a strukturális elemzéstől hellyel-közzel függetlenül kezelhető problémának bizonyult. Ahhoz a \textit{Tesseract} és a \textit{Keras} függvénykönyvtárak kerültek felhasználásra.
 
-Ez maga a megjelenítés.
+A következő szakaszokban röviden bemutatásra kerül, hogy a program milyen részekből épül fel, azoknak melyek a fő jellemzői és hogyan lehet használni őket.
 
-\begin{python}
-crop_methods.py
-\end{python}
+\Section{Képek vágása és további feldolgozása}
 
-\Section{Jegyzékek kezelése}
+Az első megközelítés esetében az eredeti képeket külön PNG fájlokba konvertálta a program. Ez azért tünt előnyösnek, mert így az \textit{OpenCV} könyvtárral való feldolgozásnál már nem kellett azzal foglalkozni, hogy a képek eredetileg PDF formátumú dokumentumból származtak.
 
-\begin{python}
-manage_directories.py
-\end{python}
+Ezek, mint első próbálkozások a \texttt{first\_try} nevű Python modulba kerültek. Ez fogja össze az alábbi modulokat:
+\begin{itemize}
+\item \texttt{crop\_methods}: A képek kivágásáért, fájlba mentéséért felelős.
+\item \texttt{get\_methods}: Azon függvényeknek a gyűjteménye, amelyek a képekből kinyerhető adatok számításait tartalmazzák. A \textit{get} itt arra utal, hogy az adott kép alapján kaphatjuk meg a segítségükkel a szükséges eredményeket.
+\item \texttt{manage\_directories}: Mivel egy PDF dokumentum esetében több oldal, azon belül pedig elméletileg tetszőleges sok strukturális elemről lehet szó, ezért a modul az ahhoz szükséges jegyzékeket kezeli. A problémát úgy oldja meg, hogy ellenőrzi, hogy milyen jegyzékekre van szükség a különféle képek kezeléséhez, és hogy azok léteznek-e. Fő műveletei így a jegyzékek létrehozása és törlése.
+\end{itemize}
 
-\Section{Képelemek keresése}
+Ezen forráskódok elkészítése több szempontból is nagyon hasznosnak bizonyult. Egyrészt ezek segítségével történt az alapvető, profilokra, abszolút intenzitásokra és azok küszöbölésére épülő módszerek kidolgozása.
 
-\begin{python}
-get_methods.py
-\end{python}
+További előnye volt még, hogy így a kép egyes részeit az eredeti képtől függetlenül lehetett kezelni, elemezni.
+
+A \texttt{crop\_methods} modulban \texttt{crop\_} prefixszel szerepelnek azok a függvények, amelyek a vizsgált strukturális elemek szerinti elkülönítést végzik.
+
+A modul szkript jelleggel készült, azért hogy az algoritmusok kipróbálása minél egyszerűbb legyen.
+A benne lévő elemek osztályba szervezhetők, viszont az aktuális felhasználási módja ezt nem indokolta. (Python esetében a modul, mint névvel hivatkozható függvénykönyvtár használható, \texttt{class} kulcsszóval történő osztálydefiníció nélkül.)
+
+Az említett programrészek futásának eredményeit összesítve \aref{chap:ocr}. fejezetben láthatjuk.
+
+A programrészek használatához az \texttt{import}-okban szereplő \texttt{pip} csomagok telepítése szükséges.
+
+\Section{Jupyter munkafüzetek használata}
+
+A módszerek kutatásának, a kapott eredmények elemzésének egy másik módját a Jupyter munkafüzetek használata jelenti.
+Ezekből a dolgozathoz az alábbiak készültek el.
+\begin{itemize}
+\item \texttt{page\_structure.ipynb}: A dokumentumok szerkezeti elemzésének lépéseit mutatja be.
+\item \texttt{partitioning.ipynb}: A dokumentumon egy rekurzív felosztásos eljárást alkalmaz, amely a képet addig szeleteli, amíg mindegyik felosztással kapott téglalap alakú területen már csak egyetlen egy összefüggő (nem elvágható) képelem van. Az eredményeket a munkafüzet meg is jeleníti.
+\item \texttt{blob\_shapes}: Egy \textit{floodfill} algoritmust mutat be, amellyel az egymással szomszédos sötét színű képpontokból kapott összefüggő alakzatokat tudja kigyűjteni a program. A munkafüzetben egy példa is szerepel, amely az \emph{a} betű megkeresésének egy módját is szemlélteti.
+\end{itemize}
+
+Ezek mellett még megtalálható egy \texttt{Region} osztály, amely a kiemelt fontosságú képterületeket reprezentálja. Ez az, amelyet gyakran RoI-ként (\textit{Region of Interest}) is emlegetnek.
+
+Az említett eredmények megtekintéséhez a Jupyter munkafüzet celláit kell futtatni a szokásos módon. A megfelelő működéséhez a \textit{NumPy}, \textit{OpenCV}, \textit{Matplotlib} és \textit{pdf2image} függvénykönyvtárakra van szükség.

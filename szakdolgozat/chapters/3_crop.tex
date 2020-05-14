@@ -1,4 +1,5 @@
 \Chapter{A dokumentum strukturális elemzése}
+\label{chap:ocr}
 
 A strukturális elemzés első lépése a beolvasott, PDF formátumú dokumentumok PNG formátumú képekké való konverziója.
 A PDF formátum megválasztását az indokolta, hogy az tekinthető a leginkább elterjedt, és a legtöbb esetben átvihető formátumnak.
@@ -111,7 +112,7 @@ def calc_margins(image):
     margins = Region(row, column, n_rows, n_columns)
     return margins
 \end{python}
-Az ilyen formában becsült margókat a \texttt{matplotlib} függvénykönyvtár segítségével vissza is lehet rajzolni a képre.
+Az ilyen formában becsült margókat a \texttt{matplotlib} függvénykönyvtár segítségével visz\-sza is lehet rajzolni a képre.
 
 % TODO: Esetleg beletenni a margós megjelenítést végző kódrészt és az eredményét.
 
