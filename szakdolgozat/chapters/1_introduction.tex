@@ -1,8 +1,15 @@
 \Chapter{Bevezetés}
 
-Strukturális adatok, margók, bekezdések, sorok, karakterek
+A dokumentumaink egy jelentős része elektronikus formában érhető el. Ennek közkedvelt formátuma a PDF (\textit{Portable Document Format}), amely segítségével különböző eszközökön közel azonos formában lehet megjeleníteni a tartalmakat.
 
-layout, blobok
+A dokumentumok szerkezete lehet nagyon egyszerű, de igen komplikált is. A dolgozat olyan módszereket mutat be, amelyek a képek strukturális elemeit ismerik fel.
+Alapvetően olyan elemekre gondolhatunk, mint a bekezdések, sorok és karakterek.
 
-Közvetlenül a Python kódok szerepelnek benne. Pszeudókódnak megfelelő.
+Az elemzésnek két fő alternatívája lehet. Az egyikben a PDF API-k használatával lehetne kinyerni a fájlokból a dokumentum adatait. Másik lehetőségként a PDF képpé alakítása, majd képfeldolgozási módszerekkel való elemzése jöhet szóba. A dolgozat az utóbbit választja több okból kifolyólag. Ezt elsősorban az indokolja, hogy az így nyert tapasztalatok, elkészített algoritmusok felhasználhatóvá válnak majd szkennelt dokumentumok vizsgálatára is. A PDF egy elég bonyolult bináris formátum, de nem az egyetlen amelyet használnak. Azzal, hogy a feldolgozás első lényegi lépése a dokumentum képpé alakítása lehetővé válik majd más formátumoknak a feldolgozása is, amennyiben azokat is képpé lehet konvertálni.
+
+A vizsgálatokhoz és az algoritmusok fejlesztéséhez a Python programozási nyelv került kiválasztásra. Ehhez szabadon elérhetőek a képfeldolgozáshoz, adatelemzéshez, azok eredményeinek a megjelenítéséhez szükséges eszközök. Szerencsére ezek jól dokumentáltak, rengeteg példát találni a használatukra.
+
+A Python programozási nyelv tervezésénél szempont volt, hogy jól áttekinthető, könnyen olvasható és értelmezhető legyen a programkód. Ez lehetővé tette, hogy az algoritmusok bemutatása közvetlenül forrásód formájában szerepeljen a dolgozatban. Speciális jelölések és pszeudókód értelmezésére vonatkozó magyarázatok helyett közvetlenül láthatjuk, hogy hogy működnek maguk az algoritmusok.
+
+A dolgozatban a különböző szintű strukturális elemek felismerésének módja és annak hatékonysága kerül bemutatásra. Az algoritmusok eredményei Python objektumok formájában válnak elérhetővé, amelyek a későbbi felhasználáshoz átalakíthatók lesznek majd XML vagy JSON formátumba is. A konverzióhoz, tároláshoz szükséges függvénykönyvtárak a Python kiadásoknak a részét képezik, így nem tünt célszerűnek a dolgozatban arra részletesen kitérni. A hangsúlyt a dolgozat az algoritmizálásra és azok eredményeinek a kiértékelésére helyezi.
 

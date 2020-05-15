@@ -1,21 +1,64 @@
-\Chapter{Dokumentumok digitalizálása}
+\Chapter{Elektronikus dokumentumok}
 
-Alapvetően irodalmi hivatkozások, a problémakör és kapcsolódó technológiák bemutatása.
+Az elektronikus dokumentumok fokozatosan kezdik felváltani a papír alapú megfelelőiket.
+Teljesen nyilvánvaló, könnyen hozzáférhető eszközök segítségével elvégezhető, hogy ilyen dokumentumokat megtekintsünk, létrehozzunk, szerkesszünk vagy valamilyen módon megosszunk.
 
-\Section{Szkennelés}
+A fejezetben bevezetésképpen azt tekintjük át, hogy milyen elterjedt és szabványosított dokumentum formátumok vannak.
+A leírás célja ezen túlmenően az is, hogy megindokolja, hogy miért éppen a PDF formátumra esett a választás.
 
-lapolvasó, kézi szkenner, fényképezett változat
+\Section{Átvihető dokumentum formátumok}
 
-Itt a forrás már eleve egy renderelt PDF, de a további technológiák ugyanúgy OCR-ek.
+Az elektronikus dokumentumoknak különféle formátumai vannak.
+A dolgozat szempontjából kiemelt fontosságú a PDF (\textit{Portable Document Format}), mivel az tekinthető a leginkább elfogadott, és mint a neve is mutatja, valószínűleg a legtöbb platformra átvihető dokumentum formátumnak.
+Az aktuálisan használt specifikációját az \textit{Adobe} nevű cég kezeli \cite{pdf}.
 
-\Section{Képfeldolgozás}
+Gyakran használt dokumentum formátum az RTF (\textit{Rich Text Format}), a DOC, a DOCX amelyet elsősorban a MicroSoft Office programcsomag tett népszerűvé. E mellett további nyílt dokumentumformátumokkal is találkozhatunk, mint például az ODT (\textit{Open Document Text}).
 
-OpenCV, hivatkozással
+Elterjedtségét illetően a PDF vetélytársának a HTML (\textit{HyperText Markup Language}) nyelven írt dokumentumokat tekinthetjük, viszont céljukban és kezelési módjukban is jelentősen különböznek.
+
+A konverzió HTML-ből PDF formátumba a megfelelő stílusbeállítások figyelembevételével mindig elvégezhető. A nehézséget a másik irány jelenti, mivel az sosem tud tökéletesen működni, mivel a HTML nyelv a PDF eszközkészletének jelentős részét nem tartalmazza.
+Ehhez kapcsolódóan találhatunk kutatási eredményeket a szakirodalomban \cite{jiang2009converting}.
+
+A PDF formátum elviekben megjelenítőeszköztől függetlenül nagyon hasonlóan jelenik meg. (Két megjelenítő eszközön a dokumentumok megjelenítésének azonosságát a hagyományos tekintetben vesszük, ezért szerepel a megfogalmazásban az, hogy nagyon hasonlóak lesznek.)
+Ezt úgy képes elérni, hogy (szöveges dokumentum esetén) a szöveges tartalom mellett akár karakter vagy ékezetek szintén is tárolja, hogy a megjelenített alakzatok melyik részének hova kell majd kerülnie.
+Ennek ilyen formában megvannak az előnyei, amelyek egyúttal a dolgozat célkitűzésére, és a választott módszerekre is választ igyekszik adni.
+\begin{itemize}
+\item A szövegelemek pontos helyének tárolása előnyös, mert így a szöveg tördelésével nem szükséges később már foglalkozni. Ez a megjelenítés sebessége és a dokumentum egysége szempontjából is lényeges. Azt mondhatjuk, hogy a dokumentum egy egységként tárolja a dokumentum helyes megjelenítéséhez szükséges adatok jelentős részét. Ez többek között azt is jelenti, hogy általában nem kell attól tartani, hogy egy adott betűtípus, vagy szimbólum a megjelenítő rendszeren nem lesz elérhető.
+\item Mivel több adatról van szó, ezért hátránynak tekinthető, hogy maga a dokumentum mérete nagyobb lesz. Ez indokolatlanul nagy fájlméretet is jelenthet, mivel ha csak a dokumentumban tárolt lényegi információkra van szükségünk, akkor egy PDF fájl mérete több ezerszerese lehet az egyszerű szöveges tárolási módénak.
+\item A PDF fájlokban a szövegek kijelölése időnként körülményes lehet. Gyakran találkozni például a sortörésekből adódó másolási hibákkal, a lemaradt ékezetekkel, a karakterek indokolatlan sorrendjével vagy akár nem látható, helytelen karakterek megjelenésével.
+\item Attól függően, hogy a PDF milyen eszközzel készült, tartalmazhat elválasztásokat, speciális tördelési módokat.
+\end{itemize}
+
+\Section{A dokumentum tartalma}
+
+A dokumentumokban lévő adatok egy része a tartalmat, másik része pedig a hozzá szükséges formázást írja le.
+A dolgozat célja, hogy bemutasson olyan módszereket, amelyekkel ez a kettő elválasztható egymástól.
+Az optikai karakterfelismerő rendszerek (OCR, \textit{Optical Character Recognition}) tulajdonképpen ezt a problémát oldják meg általánosan \cite{mori1999optical}.
+A szakirodalomban ehhez kapcsolódóan teljes dokumentumok strukturális elemzésére is láthatunk példákat, ahol a dokumentum képének szegmentálása adja az elemzés alapját \cite{fujisawa1992segmentation}.
+
+A PDF fájlformátum közismert, számos API is elérhető hozzá, viszont elég bonyolult (a benne rejlő számos lehetőség miatt).
+Ahogy korábban említésre került, a karakterek elrendezése, tördelése elválaszthatja az egyébként egymáshoz tartozó adatokat, így a szövegblokkok kiolvasása önmagában nem elegendő.
+Arra tehát nem tünt érdemesnek hagyatkozni, hogy a PDF fájlban lévő adatokat valamilyen függvénykönyvtár segítségével közvetlenül ki lehessen nyerni.
+Helyette inkább az a feltételezés tünt megfelelőnek, hogy egy PDF dokumentum egy minimális mennyiségű zajjal terhelt bemeneti képnek tekinthető, amelyből adatokat a hagyományos képfeldolgozási módszerekkel ki lehet nyerni. 
 
 \Section{Optikai karakterfelismerés}
 
-Néhány módszert megemlíteni
+Az optikai karakterfelismerési problémának számos változatai és előfordulási módjai vannak.
+A módszereket például az alábbi szempontok alapján csoportosíthatjuk.
+\begin{itemize}
+\item Az elemzett szöveg alapján el szoktak különíteni géppel- és kézzel írott karakterekre kifejlesztett karakterfelismerő módszereket.
+\item Jelentős különbségek vannak annak megfelelően, hogy mennyi szimbólumot tartalmaz az az ábécé, amelyből a szöveg karakterei kikerültek. Különbségek adódnak továbbá a szöveg elrendezésének változatosságából, a szövegképben előforduló hibákból, zajokból.
+\item Az alkalmazott heurisztika alapján beszélhetünk determinisztikus és sztochasztikus módszerekről. Utóbbi olyan esetekben fordul elő gyakrabban, amikor a problémát egy optimalizálási feladatra vezetik vissza, és a keresési tér mérete miatt véletlenszerű, futtatásonként különböző eredményeket adhat az algoritmus.
+\end{itemize}
+A dolgozat arra törekszik, hogy a kifejezetten előnyösnek mondható képfeldolgozási problémát az elérhető eszközökkel minél egyszerűbben, és elegánsabban oldja meg.
+A képfeldolgozással kapcsolatos problémákat az \textit{OpenCV} (\textit{Open Computer Vision}) nevű függvénykönyvtár segítségével oldottam meg \cite{opencv}.
 
 \Section{Gépi tanulási módszerek}
 
-Scikit Learn, ANN
+A képfeldolgozási feladat is egy adatfeldolgozási probléma. A hagyományos módszertan szerint először egy előfeldolgozási, zajszűrési lépés szükséges, amit a jellegvektorok kinyerése követ majd.
+Mivel a PDF fájlokban fehér zajra, megvilágítási hibákra, foltszerű zajokra nem kell számítanunk, ezért a feldolgozást gyakorlatilag kezdhetjük akár a jellegvektorok kinyerésével.
+
+A Python-hoz szabadon elérhetők a \textit{Tesseract} \cite{patel2012optical} és a \textit{Keras} \cite{geron2019hands} függvénykönyvtárak, amelyeket előszeretettel használnak optikai karakterfelismerési problémák megoldására.
+A gépi tanulás tanító- és tesztminták meglétét feltételezi. Mivel hosszabb terjedelmű PDF dokumentumokat igen könnyű találni, ismert szövegből is egyszerűen létre lehet őket hozni, így a tanító és tesztminták előállítása ezek segítségével megoldható.
+
+A későbbiekben láthatjuk majd, hogy milyen módon és milyen eredményességgel lehet alkalmazni ezeket az aktuális problémára.

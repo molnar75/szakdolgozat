@@ -160,7 +160,7 @@ A probléma egy lehetséges megoldását az adja, hogy ha az egyenesekkel tört�
 Az összefüggő képpontok csoportjának (\textit{blob}-oknak) a keresése feltételez valamilyen hasonlóságot a képpontokra nézve. Ez esetben ez két összetevőből adódik. Egyrészt küszöbölés segítségével meg kell állapítani, hogy a képpont világos vagy sötét-e. Mivel PDF-ből konvertált képről van szó, ezért a kép kontrasztos, és többségében csak az élsimításból adódó zajokat tartalmazza, így ez egyszerűen, akár 128-as küszöbértékkel végezhető egy tipikus dokumentum esetén.
 
 A másik összetevő a szomszédsági viszony megadása. Feltételezzük, hogy az algoritmus csak a sor- és oszlop szerinti szomszédságot veszi figyelembe. Így egy egyszerű szélességi bejárással meghatározhatók az összefüggő csoportok.
-Maga az algoritmus tulajdonképpen egy színkitöltő algoritmus (\textit{floodfill}) egyszerűsített változata lesz így.
+Maga az algoritmus tulajdonképpen egy színkitöltő algoritmus (\textit{floodfill}) egyszerűsített változata lesz így \cite{floodfill}.
 A \texttt{blob\_shapes.ipynb} nevű munkafüzetben \texttt{find\_blob} néven került implementálásra.
 Ez paraméterként az alábbi objektumokat várja.
 \begin{itemize}

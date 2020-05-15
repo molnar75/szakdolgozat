@@ -8,15 +8,12 @@ A PNG formátum esetében szintén az elterjedtsége, szabványos kialakítása 
 
 \Section{A PDF dokumentum beolvasása}
 
-% TODO: https://pypi.org/project/pdf2image/
-A dokumentumok képpé konvertálásához a \texttt{pdf2image} függvénykönyvtárt használtam [].
+A dokumentumok képpé konvertálásához a \texttt{pdf2image} függvénykönyvtárt használtam \cite{pdf2image}.
 Ez paraméterként egyszerűbb esetben a PDF dokumentum elérési útvonalát és a kép méretét várja.
 (A méret megadásánál a képarány megtartása mellett opcionális lehet a kép magassága vagy szélessége.)
 
-% TODO: https://pypi.org/project/Pillow/
-A beolvasást követően egy \textit{Pillow} [] függvénykönyvtár formátumának megfelelő képobjektum jön létre.
-% TODO: NumPy hivatkozás (könyvre lehetőleg)
-A \textit{Pillow} manapság már nem tekinthető korszerű eszköznek, ezért a beolvasott képeket \textit{NumPy} [] mátrixokká konvertálom.
+A beolvasást követően egy \textit{Pillow} \cite{clark2015pillow} függvénykönyvtár formátumának megfelelő képobjektum jön létre.
+A \textit{Pillow} manapság már nem tekinthető korszerű eszköznek, ezért a beolvasott képeket \textit{NumPy} \cite{oliphant2006guide} mátrixokká konvertálom.
 A beolvasás és az átalakítás a \texttt{test2.pdf} esetében az alábbi módon valósítható meg.
 
 \begin{python}
@@ -49,8 +46,6 @@ row_profile = np.mean(image, axis=1)
 column_profile = np.mean(image, axis=0)
 \end{python}
 Ezt a két intenzitást \aref{fig:mf_2}. ábrával szemlélteti a program.
-% amit le is ment a megadott mappába.
-% TODO: A kép megjelenítési módjáról a Matplotlib kapcsán lehet írni. (axis-ok megadása)
 
 \begin{figure}[h!]
 \centering
@@ -278,8 +273,7 @@ Ezzel a dokumentumom fel van bontva a legapróbb egységre (karakter) és megfel
 
 \Section{Karakterek felismerése}
 
-A Python egyik leginkább elterjedt OCR eszközét, a \textit{Python-tesseract}-ot választottam.
-% TODO: Tesseract hivatkozás!
+A Python egyik leginkább elterjedt OCR eszközét, a \textit{Python-tesseract}-ot választottam \cite{tesseract}.
 Első lépésben a karakter levágásnál átadtam a \texttt{pytesseract} \texttt{image\_to\_string} nevű metódusának a képet, majd a válaszként kapott sztringet hozzáfűztem egy már meglévő sztringemhez. Amint végig ért a metódus minden soron, egy külső állományba lementettem a megkapott szöveget. Ezen első próbálkozásnál sajnos azt tapasztaltam, hogy az OCR egyetlen karaktert sem ismert fel.
 
 Ebből arra következtettem, hogy a felbontása az adott képnek túl alacsony lehet, így megpróbálkoztam egy nagyobb felbontású képpel, de sajnos úgy sem jártam sikerrel.
@@ -337,8 +331,8 @@ Végeredményül kapok egy listát, ami \aref{fig:spacing}. ábrán látható cs
 
 A programom fő része maga a paragrafusokra bontás, és az ilyenkor történő képfelismerés. Ekkor dönti el a program hogy érdemes-e az adott résszel foglalkozni, vagy sem. Amennyiben egy szöveget tartalmazó bekezdés a képekhez kerül, a rajta levő szöveg nem értékelődik ki. Amennyiben a kép a szövegeknél marad a program megpróbálja apróbb részekre bontani, és sok felesleges képpel foglalkozik. Ami viszont fontosabb, hogy mind a két eset azt eredményezi, hogy a kapott szöveg minősége romlik. Vagy kimarad belőle több bekezdés, vagy a képek helyére kérdőjel, vagy egyéb oda nem illő karakter kerül.
 
-Nyilvánvalóvá vált hogy ezen a téren fejlődnie kell a programnak, ezért elkezdtem foglalkozni a neurális hálókkal, méghozzá a Python-ban megtalálható \textit{Keras} nevezetű neurális háló API-val.
-% TODO: Keras hivatkozás!
+Nyilvánvalóvá vált hogy ezen a téren fejlődnie kell a programnak, ezért elkezdtem foglalkozni a neurális hálókkal, méghozzá a Python-ban megtalálható \textit{Keras} nevezetű neurális háló API-val \cite{gulli2017deep}.
+
 A \textit{Keras} fő építőeleme a model, ami lehetőséget ad a különböző rétegek kezelésére. Első lépésben konfigurálni kell a modellünket, megadni hogy hány és milyen rétegeket szeretnénk használni, majd jöhet a betanítás.
 
 Egy szekvenciális modellt használtam, 2 konvolúciós és 2 pooling réteggel. A betanítás során 150 képet adtam be a modellemnek, egyenként $32\times32$-es méretűeket. Ahhoz, hogy pontosabb eredményt érjünk el, sokkal több tanuló képre lenne szükség. A betanítás eredménye \aref{fig:accuracy}. és \aref{fig:loss}. ábrákon látható.

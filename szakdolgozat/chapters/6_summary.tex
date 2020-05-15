@@ -1,7 +1,11 @@
 \Chapter{Összefoglalás}
 
-Hasonló szerepe van, mint a bevezetésnek.
-Itt már múltidőben lehet beszélni.
-A szerző saját meglátása szerint kell összegezni és értékelni a dolgozat fontosabb eredményeit.
-Meg lehet benne említeni, hogy mi az ami jobban, mi az ami kevésbé jobban sikerült a tervezettnél.
-El lehet benne mondani, hogy milyen további tervek, fejlesztési lehetőségek vannak még a témával kapcsolatban.
+A dolgozat a dokumentumok szerkezeti elemzésének néhány lehetőségét mutatta be a Python eszközkészletének felhasználásával. A feldolgozási lépések jellemzően a nagyobb elemektől a kisebbek felé történtek. Ez az irány természetesen adódott, és láthatóvá vált közben az is, hogy a kisebb elemek feldolgozása hasonlóképpen oldható meg, azonos részproblémákat vet fel, mint a nagyobbaké. A részek elkülönítéséhez az intenzitásprofilként kapott vektorokkal lehetett dolgozni, amely így egyaránt megfelelőnek bizonyult a margók, sorok és karakterek elválasztása esetében is.
+
+A felvetett problémára csak akkor lehetne tökéletes megoldást adni, hogy ha pontosan definiálva lenne, hogy milyen elemek és hogyan fordulhatnak elő egy dokumentumban. Ez hellyel-közzel teljesül, mivel a PDF szabványosított, viszont olyan eseteket nem lehet kizárni, amikor például a dokumentum háttere egy kép, ami miatt a dokumentum értelmezése emberi szemmel nézve is nehézzé válik. Összességében tehát egy adatelemzési problémaként kellett kezelni a feldolgozást, ahol előfordulhatnak pontatlan, zajos esetek, és az eredményt is becslésnek kell tekinteni.
+
+A részproblémák statisztikai jellege miatt a hisztogramok elemzése gyakran segített. A megfelelő transzformációk elvégzését követően leolvashatóvá váltak az értékek eloszlásának jellemzői, becsülni lehetett az algoritmusok paramétereit, mint például a küszöbértékeket.
+
+Készültek mérések arra vonatkozóan, hogy a különböző strukturális szinteken hogyan változik a becslés pontossága a futások számának függvényében. Nagy mennyiségű dokumentum feldolgozása esetén ez azért jó, mert így a teljes futási idő is becsülhető lesz, illetve az összes eredmény ellenőrzése nélkül is lesznek információink a megbízhatóságra vonatkozóan.
+
+A szerkezeti elemzés bizonyos dokumentumok esetében nagyon bonyolult. A táblázatok, matematikai képletek, képek vagy egyéb, nem szöveges jellegű elemek felismerése és értelmezése jelenleg is kutatott terület. A dolgozat ezek kezelésére javaslatot tesz, de részletesebb vizsgálatuk külön, későbbi kutatás tárgyát képezi.
