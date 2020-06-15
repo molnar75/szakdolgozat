@@ -1,0 +1,84 @@
+\documentclass{article}
+\usepackage{graphicx}
+
+\begin{document}
+
+\title{Szakdolgozat előadás szöveg}
+\author{Molnár Fanni}
+\date{2020. június 23.}
+
+\maketitle
+
+\newpage
+
+\section{Bevezetés}
+
+A mai világban a legtöbb dokumentumunkat online tároljuk. A diákok jelentős része már nem kézzel írt, hanem digitális jegyzetekkel dolgozik, és a legtöbb tantárgynál így kapja meg a tárgy teljesítéséhez szükséges tananyagot is. Ezen kívül már egyre több hivatalos ügyet is el tudunk intézni a kanapén ülve, egyszerűen csak kitöltjük az adott dokumentumot, szkenneljük és már küldjük is.
+A dokumentum tárolásának közkedvelt formátuma a PDF.
+
+Ezért választottam a szakdolgozatom témájának a strukturált adatok ki-nye\-ré\-sét PDF dokumentumokból. A dokumentumok elmezésének két fő alternatívája lehet. Az egyik amikor a PDF API-k használatával nyerjük ki az adatokat, a másik pedig amikor az oldalakat képpé alakítjuk, majd a képeket kép\-fel\-dol\-go\-zá\-si módszerekkel elemezzük. Már régebb óta érdekelt a képfeldolgozás, így ter\-mé\-sze\-te\-sen ezt az irány választottam.
+
+\section{Dokumentum szerkezete}
+
+Különböző dokumentumok elemzése során arra a következtetésre jutottam hogy maguk a dokumentumok igen sok félék lehetnek. A legegyszerűbb eset amikor nagyon letisztult, csak bekezdéseket tartalmaz, vagy lehet sokkal bonyolultabb például képeket, paragrafusokat, oldalszámokat, esetleg fejléceket tartalmazó dokumentum is. Ami közös volt mindegyik PDF-ben, hogy vízszintesen, az y tengely mentén fel lehet őket kisebb részekre, bekezdésekre bontani. Az egyszerű dokumentumnál elég ez a vízszintes felbontás és máris megvan minden szöveget tartalmazó terület, a bonyolultabb dokumentumokkal pedig minden bekezdésre szükséges egy függőleges, x tengely menti vizsgálat is, így elválasztva a paragrafusokat,képeket egymástól.
+
+\section{Dokumentum felbontása}
+
+Minden dokumentum esetén a bekezdéseket, sorokat, szavakat, még a betűket is üres, a háttér színnel megegyező (általában fehér) egybefüggő terület választja el. Ahhoz, hogy ezeket a részeket megtaláljam, intenzitás vizsgálatot végeztem a dokumentum minden sorára és oszlopára. Itt igazából meghatároztam minden pixelnek a színét egy adott sorban/oszlopban, összeadtam az értékeket majd átlagoltam őket. Így kaptam 2 darab tömböt, ami minden sor és minden osz\-lop átlagát tartalmazza. Az ábrán egy egyszerű dokumentum látható, mellette pedig az x és y tengely menti intenzitások. A tengelyek mentén jól látszik hogy a tisztán fehér területek intenzitása 255, míg ahol szöveg található ott ettől kisebb. 
+
+\section{Margók}
+
+A margók levágásához az intenzitásokat tartalmazó tömb elejétől indultam el, majd addig haladtam amíg fehér, egybefüggő területet találtam. Amint az intenzitás nem 255, abban az esetben megállok, és lementem az indexet, mivel onnantól kezdődik a dokumentum első szöveget tartalmazó sora. Ezt megismétlem visszafelé is mind a kettő tömbön, így lesz meg alsó-felső, jobb-bal margó végpontja. Ezek után ezen végpontok segítségével eltávolítom a margókat a képről. A kapott margók nélküli dokumentumot fogom tovább bontani egyre kisebb részekre. Először paragrafusokra, utána sorokra, szavakra majd karakterekre.
+
+\section{Paragrafusok}
+
+A paragrafusokra bontásnál azt feltételeztem hogy a térköz nagyobb mint a sorköz. Eleinte csak egy tapasztalati értéket használtam (40 feletti közök), de a későbbiekben készítettem egy küszöbérték becslést, ahol a vizsgálat elején meghatároztam a margókat, térközt, sorközt és később azokkal az értékekkel dolgoztam. Lementettem a fehér részek kezdő és végpontjait, majd az első pontot kihagyva kettesével haladtam az indexeken. Így azt értem el, hogy nem a fehér, hanem a sötét intenzitású területek kerültek kivágásra.
+
+A tapasztalti értékemet a lent látható hisztogramra alapoztam. Jól látszik hogy a sorközök 12-től kisebbek, ezután következik egy nagy ugrás, utána jönnek a térközök amik 47-től nagyobbak. Több dokumentum vizsgálata után döntöttem úgy, hogy a 40 az egy megfelelő érték. Természetesen a küszöbértékek meghatározása után már nem volt erre szükség.
+
+\section{Sorok}
+
+A soroknál ugyan azon algoritmussal dolgoztam mint a paragrafusoknál, annyi különbséggel hogy itt a küszöbérték az sokkal alacsonyabb volt. Kezdetben itt is tapasztalati küszöbértéket használtam, méghozzá a 4-től nagyobb összefüggő területeket kerestem. Úgy tapasztaltam hogy alatta a sötét részek főleg zajok, nem pedig teljes sorok.
+
+Amennyiben egyszerű dokumentumról van szó, akkor a paragrafusokra bontás ki is maradhat, hiszen az eredeti dokumentumból megkaphatjuk a sorokat.
+
+\section{Szavak}
+
+A szavakra és karakterekre bontást már nem az y, hanem az x tengely mentén végeztem. A már kivágott sorokat felhasználva kerestem a fehér területeket, tapasztalati érték alapján legalább 5 darabot, majd egyenként lementettem a megtalált szavakat.
+
+\section{Karakterek}
+
+A szavak betűkre bontása már egy érdekesebb témakör. Ennél az algoritmusnál már nem a világos, hanem épp hogy a sötét részeket kerestem, és ha már 1 pixelnek megfelelő sötét részt is találtam már mentettem az adott indexet.
+Ez a legtöbb esetben szépen működött, és megkaptam egyesével a betűket.
+Viszont a ligatúrák esetében a karakterek egymásba lógnak, ezért az algoritmusom nem vágta szét őket, hanem egybe mentette le.
+Ilyen esetek voltak például az r és az f vagy t találkozása, vagy például a dupla t vagy f betűk.
+
+Az ábrán a betűk típusa Times New Roman. Jól látszik, hogy a betűk között nincsen összefüggő, fehér rész, így a program nem tudja szétválasztani őket. Ez a legfeltűnőbb jelen esetben a kettő darab f betű találkozása, ott ténylegesen egymásba lóg a két karakter.
+
+\section{Bonyolultabb dokumentum felbontása}
+
+Bonyolultabb dokumentumok esetében nem elég az y tengely menti vizsgálat, hanem minden kivágott bekezdés esetén meg kell vizsgálni, hogy az adott bekezdés tartalmaz-e több paragrafust.
+Ha igen, azokat is külön kell választanunk.
+Az ábra egy ilyen folyamatot mutatna be. Első lépésben a dokumentumot az y tengely mentén felbontja az algoritmus, majd ezeket a felbontott egységeket megvizsgálja az x tengely mentén. A 3. fázisban látható hogy így a kép elválik a szövegtől és a három hasáb külön-külön egység lett.
+
+\section{Képek és szövegek megkülönböztetése}
+
+Az eddigi vizsgálatok során a dokumentumok nem tartalmaztak képet csak szöveget. Amennyiben ez nem így van, valamilyen módon meg kell különböztetünk azokat a képeket, amelyek nem tartalmaznak szöveget, és azokat amelyek igen. Erre azért van nagy szükségünk mivel a program a bekezdéseket további részekre bontja. Ha egy képet szeretne felbontani, az nagy valószínűséggel nem fog neki sikerülni, vagy ha mégis akkor felesleges képek keletkeznek, emellett a program időt is tölt a kép elemzésével.
+
+A megkülönböztetéshez kezdetben azt a tényt használtam fel hogy a szöveget tartalmazó képnél kell legyen összefüggő világos intenzitás (háttér), majd egy sötétebb intenzitás (ami a szöveg) majd még egy egybefüggő világos intenzitás. Sajnos ez a módszer nem volt túl hatékony. A dián látható képet az algoritmus gondolkodás nélkül a szövegekhez sorolja, hiszen igaz rá hogy alul található egy világos rész, majd valamennyi sötét, majd megint világos következik. Ezt a képet nagyjából fél perc keresés után találtam meg, így beláttam hogy más módszert kell keresnem.
+
+\section{Képfelismerés neurális háló segítségével}
+
+A képfelismerés javításának érdekében a Python-ban megtalálható Keras nevezetű neurális háló API-val kezdtem el foglalkozni.
+A Keras fő építőeleme a modell, ami lehetőséget ad a különböző rétegek kezelésére.
+Első lépésben konfigurálni kell a modellünket, megadni hogy hány és milyen rétegeket szeretnénk használni, majd következik a betanítás.
+Egy szekvenciális modellt használtam, 2 konvolúciós és 2 pooling réteggel. A betanítás során 150 képet adtam be a modellemnek, egyenként 32 × 32-es méretűeket.
+Ahhoz, hogy pontosabb eredményt érjünk el, sokkal több tanuló képre lenne szükség de a programomban a kép és szöveg megkülönböztetése nagyban javult, így ezzel elértem a célomat.
+
+\section{Összegzés}
+
+Összegezve az elmondottakat azt tudnám kijelenteni hogy a szerkezeti elemzés bizonyos dokumentumok esetében nagyon bonyolult. A táblázatok, matematikai képletek, képek vagy egyéb, nem szöveges jellegű elemek felismerése és értelmezése jelenleg is kutatott terület. A dolgozat ezek közül a képfelismerés témakörét próbálta valamennyire körbejárni, de minden egyes elem külön kutatást igényel.
+
+ Ezen kívül a felvetett problémára csak akkor lehetne tökéletes megoldást adni, hogy ha pontosan definiálva lenne, hogy milyen elemek és hogyan fordulhatnak elő egy dokumentumban. Ez a PDF esetében valamennyire teljesül, mivel szabványosított, viszont olyan eseteket nem lehet kizárni ahol a háttér például egy kép. Ebben az esetben emberi szemmel is nehézkessé válik az értelmezése.
+
+\end{document}
