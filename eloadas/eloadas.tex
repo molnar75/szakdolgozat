@@ -119,13 +119,17 @@ A dokumentumok szerkezete lehet nagyon egyszerű, de igen komplikált is.
 \begin{frame}[fragile]
 \frametitle{Dokumentum felbontása}
 
-A felbontásokhoz a dokumentumban levő, összefüggő fehér területeket kerestem (margó, sorköz stb.). Meghatároztam az intenzitást a dokumentum minden sorára és oszlopára majd ezek mentén kezdtem meg a felbontást.
+A felbontásokhoz a dokumentumban levő, összefüggő fehér területeket kerestem (margó, sorköz stb.). Meghatároztam az átlagos intenzitást a dokumentum minden sorára és oszlopára majd ezek mentén kezdtem meg a felbontást.
 
-\smallskip
+\end{frame}
+
+% --------------------
+\begin{frame}[fragile]
+\frametitle{Dokumentum felbontása}
 
 \begin{figure}[!tbp]
   \centering
-  \begin{minipage}[b]{0.45\textwidth}
+  \begin{minipage}[b]{0.6\textwidth}
     \includegraphics[width=\textwidth]{images/intensity.png}
   \end{minipage}
 \end{figure}
@@ -136,7 +140,7 @@ A felbontásokhoz a dokumentumban levő, összefüggő fehér területeket keres
 \begin{frame}[fragile]
 \frametitle{Margók}
 
-A margók levágásához az intenzitásokat tartalmazó tömb elejétől indultam el, majd addig haladtam amíg fehér, egybefüggő területet találtam. Amint az intenzitás nem 255, abban az esetben megállok, és lementem az indexet, mivel onnantól kezdődik a dokumentum első szöveget tartalmazó sora. Ezt megismétlem visszafelé is mind a kettő tömbön, így lesz meg alsó-felső, jobb-bal margó végpontja.
+A margók levágásához az intenzitásokat tartalmazó tömb elejétől indultam el, majd addig haladtam amíg fehér, egybefüggő területet találtam. 
 
 \bigskip
 
@@ -149,16 +153,12 @@ A kapott margók nélküli dokumentumot fogom tovább bontani paragrafusokra, so
 \frametitle{Paragrafusok}
 
 A paragrafusokra bontásnál azt feltételezem hogy a térköz nagyobb mint a sorköz.
-\newline
-Eleinte csak egy tapasztalati értéket használtam (40 feletti közök), de a későbbiekben készítettem egy küszöbérték becslést, ahol a vizsgálat elején meghatároztam a margókat, térközt, sorközt és később azokkal az értékekkel dolgoztam.
 
 \bigskip
 
-A tapasztalti értékemet a lent látható hisztogramra alapoztam.
-
 \begin{figure}[!tbp]
   \centering
-  \begin{minipage}[b]{0.45\textwidth}
+  \begin{minipage}[b]{0.7\textwidth}
     \includegraphics[width=\textwidth]{images/segment_hist.png}
   \end{minipage}
 \end{figure}
@@ -173,7 +173,12 @@ A soroknál ugyan azon algoritmussal dolgoztam mint a paragrafusoknál, annyi k�
 
 \bigskip
 
-Kezdetben itt is tapasztalati küszöbértéket használtam, méghozzá a 4-től nagyobb összefüggő területeket kerestem. Úgy tapasztaltam hogy alatta a sötét részek főleg zajok, nem pedig teljes sorok.
+\begin{figure}[!tbp]
+  \centering
+  \begin{minipage}[b]{0.7\textwidth}
+    \includegraphics[width=\textwidth]{images/segment_hist.png}
+  \end{minipage}
+\end{figure}
 
 \end{frame}
 
@@ -195,15 +200,6 @@ A már kivágott sorokat felhasználva kerestem a fehér területeket, tapasztal
 
 A szavak betűkre bontása már egy érdekesebb témakör. Ennél az algoritmusnál már nem a világos, hanem épp hogy a sötét részeket kerestem, és ha már 1 pixelnek megfelelő sötét részt is találtam már mentettem az adott indexet.
 
-\bigskip
-
-Ez a legtöbb esetben szépen működött, és megkaptam egyesével a betűket.
-
-\bigskip
-
-Viszont a ligatúrák esetében a karakterek egymásba lógnak, ezért az algoritmusom nem vágta szét őket, hanem egybe mentette le.
-Ilyen esetek voltak például az r és az f vagy t találkozása, vagy például a dupla t vagy f betűk.
-
 \begin{figure}[!tbp]
   \centering
   \begin{minipage}[b]{0.45\textwidth}
@@ -216,9 +212,6 @@ Ilyen esetek voltak például az r és az f vagy t találkozása, vagy például
 % --------------------
 \begin{frame}[fragile]
 \frametitle{Bonyolultabb dokumentum felbontása}
-
-Bonyolultabb dokumentumok esetében nem elég az y tengely menti vizsgálat, hanem minden kivágott bekezdés esetén meg kell vizsgálni, hogy az adott bekezdés tartalmaz-e több paragrafust.
-Ha igen, azokat is külön kell választanunk.
 
 \begin{figure}[!tbp]
   \centering
@@ -241,11 +234,9 @@ Ha igen, azokat is külön kell választanunk.
 \begin{frame}[fragile]
 \frametitle{Képek és szövegek megkülönböztetése}
 
- Ha tartalmaz képet a dokumentumunk, azt meg kell különböztetnünk a bekezdésektől. Ehhez kezdetben azt a tényt használtam fel hogy a szöveget tartalmazó képnél kell legyen összefüggő világos intenzitás (háttér), majd egy sötétebb intenzitás (ami a szöveg) majd még egy egybefüggő világos intenzitás. Sajnos ez a módszer nem volt túl hatékony.
-
 \begin{figure}[!tbp]
   \centering
-  \begin{minipage}[b]{0.45\textwidth}
+  \begin{minipage}[b]{1\textwidth}
     \includegraphics[width=\textwidth]{images/tree.png}
   \end{minipage}
 \end{figure}
@@ -257,13 +248,65 @@ Ha igen, azokat is külön kell választanunk.
 \frametitle{Képfelismerés neurális háló segítségével}
 
 A képfelismerés javításának érdekében a Python-ban megtalálható Keras nevezetű neurális háló API-val kezdtem el foglalkozni.
-A Keras fő építőeleme a modell, ami lehetőséget ad a különböző rétegek kezelésére.
-Első lépésben konfigurálni kell a modellünket, megadni hogy hány és milyen rétegeket szeretnénk használni, majd következik a betanítás.
+
+\begin{figure}[!tbp]
+  \centering
+  \begin{minipage}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{images/accuracy.png}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{images/loss.png}
+  \end{minipage}
+\end{figure}
+
+\end{frame}
+
+% --------------------
+\begin{frame}[fragile]
+\frametitle{A vizsgálatokhoz készített programok}
+
+\begin{itemize}
+    \item Python programozási nyelv (NumPy, OpenCV, Matplotlib függvénykönyvtárak)
+    \item Jupyter munkafüzetek
+    \item Tesseract, Keras függvénykönyvtárak
+\end{itemize}
+
+\end{frame}
+
+% --------------------
+\begin{frame}[fragile]
+\frametitle{Képek vágása és további feldolgozása}
+
+A first\_try nevű Python modul fogja össze az alábbi modulokat:
+
+\bigskip 
+
+\begin{itemize}
+    \item crop\_methods
+    \item get\_methods
+    \item manage\_directories
+\end{itemize}
+
+\end{frame}
+
+% --------------------
+\begin{frame}[fragile]
+\frametitle{Jupyter munkafüzetek használata}
+
+A módszerek kutatásának, a kapott eredmények elemzésének egy másik módját a Jupyter munkafüzetek használata jelenti.
+
+\bigskip 
+
+\begin{itemize}
+    \item page\_structure.ipynb
+    \item partitioning.ipynb
+    \item blob\_shapes
+\end{itemize}
 
 \bigskip
 
-Egy szekvenciális modellt használtam, 2 konvolúciós és 2 pooling réteggel. A betanítás során 150 képet adtam be a modellemnek, egyenként 32 × 32-es méretűeket.
-Ahhoz, hogy pontosabb eredményt érjünk el, sokkal több tanuló képre lenne szükség de a programomban a kép és szöveg megkülönböztetése nagyban javult, így ezzel elértem a célomat.
+Megfelelő futásukhoz szükségesek a következő függvénykönyvtárak: NumPy, OpenCV, Matplotlib és pdf2image.
 
 \end{frame}
 
