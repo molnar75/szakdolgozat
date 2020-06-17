@@ -66,7 +66,7 @@
 \begin{document}
 % ==============
 
-\title[Strukturált adatok kinyerése PDF dokumentumokból]{Strukturált adatok kinyerése PDF dokumentumokból}
+\title[Strukturált adatok kinyerése PDF dokumentumokból]{Strukturált adatok kinyerése \\ PDF dokumentumokból}
 \author[Molnár Fanni]{\textbf{Molnár Fanni}}
 \institute[]{Miskolci Egyetem}
 \date{2020. június 23.}
@@ -79,17 +79,17 @@
 \frametitle{Bevezetés}
 
 A dokumentumaink egy jelentős része elektronikus formában érhető el. Ennek közkedvelt formátuma a PDF (Portable Document Format).
-A dolgozat olyan módszereket mutat be, amelyek a képek strukturális elemeit ismerik fel.
-
-\smallskip
-
-Az elemzésnek két fő alternatívája lehet:
 
 \bigskip
 
+A dolgozat olyan módszereket mutat be, amelyek a képek strukturális elemeit ismerik fel.
+
+\bigskip
+
+Az elemzésnek két fő alternatívája lehet:
 \begin{itemize}
-    \item PDF API-k használatával lehet kinyerni a fájlokból a dokumentum adatait
-    \item PDF képpé alakítása, majd képfeldolgozási módszerekkel való elemzése
+    \item PDF API-k használatával lehet kinyerni a fájlokból a dokumentum adatait,
+    \item PDF képpé alakítása, majd képfeldolgozási módszerekkel való elemzése.
 \end{itemize}
 
 \end{frame}
@@ -117,15 +117,19 @@ A dokumentumok szerkezete lehet nagyon egyszerű, de igen komplikált is.
 
 % --------------------
 \begin{frame}[fragile]
-\frametitle{Dokumentum felbontása}
+\frametitle{Dokumentum részekre bontása}
 
-A felbontásokhoz a dokumentumban levő, összefüggő fehér területeket kerestem (margó, sorköz stb.). Meghatároztam az átlagos intenzitást a dokumentum minden sorára és oszlopára majd ezek mentén kezdtem meg a felbontást.
+A felbontásokhoz a dokumentumban levő, összefüggő fehér területeket kerestem (margó, sorköz stb.).
+
+\bigskip
+
+Meghatároztam az átlagos intenzitást a dokumentum minden sorára és oszlopára majd ezek mentén kezdtem meg a felbontást.
 
 \end{frame}
 
 % --------------------
 \begin{frame}[fragile]
-\frametitle{Dokumentum felbontása}
+\frametitle{Átlagok vizsgálata a peremeken}
 
 \begin{figure}[!tbp]
   \centering
@@ -156,7 +160,7 @@ A paragrafusokra bontásnál azt feltételezem hogy a térköz nagyobb mint a so
 
 \bigskip
 
-A soroknál ugyan azon algoritmussal dolgoztam mint a paragrafusoknál, annyi különbséggel hogy itt a küszöbérték az sokkal alacsonyabb volt.
+A soroknál ugyan azon algoritmussal dolgoztam, mint a paragrafusoknál, annyi különbséggel, hogy itt a küszöbérték az sokkal alacsonyabb volt.
 
 \end{frame}
 
@@ -258,7 +262,8 @@ A képfelismerés javításának érdekében a Python-ban megtalálható Keras n
 \frametitle{A vizsgálatokhoz készített programok}
 
 \begin{itemize}
-    \item Python programozási nyelv (NumPy, OpenCV, Matplotlib függvénykönyvtárak)
+    \item Python programozási nyelv
+    \item NumPy, OpenCV, Matplotlib függvénykönyvtárak
     \item Jupyter munkafüzetek
     \item Tesseract, Keras függvénykönyvtárak
 \end{itemize}
@@ -306,15 +311,15 @@ Megfelelő futásukhoz szükségesek a következő függvénykönyvtárak: NumPy
 \frametitle{Összegzés}
 
 \begin{itemize}
-    \item A szerkezeti elemzés bizonyos dokumentumok esetében nagyon bonyolult
-    \item A felvetett problémára csak akkor lehetne tökéletes megoldást adni, hogy ha pontosan definiálva lenne, hogy milyen elemek és hogyan fordulhatnak elő egy dokumentumban
+    \item A szerkezeti elemzés bizonyos dokumentumok esetében nagyon bonyolult.
+    \item A felvetett problémára csak akkor lehetne tökéletes megoldást adni, hogy ha pontosan definiálva lenne, hogy milyen elemek és hogyan fordulhatnak elő egy dokumentumban.
 \end{itemize}
 
 \end{frame}
 
 % --------------------
 \begin{frame}[fragile]
-\frametitle{Hivatkozott irodalmak}
+\frametitle{Felhasznált irodalmak}
 
 \begin{itemize}
     \item Gary Bradski and Adrian Kaehler. Learning OpenCV: Computer vision with the OpenCV library. " O’Reilly Media, Inc.", 2008.
